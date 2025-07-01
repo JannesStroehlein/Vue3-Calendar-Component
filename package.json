@@ -1,5 +1,5 @@
 {
-  "name": "vue3-calendar",
+  "name": "vue3-calendar-component",
   "version": "1.0.0",
   "description": "A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advanced features",
   "type": "module",
