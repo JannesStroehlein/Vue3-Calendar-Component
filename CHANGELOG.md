@@ -1,3 +1,7 @@
+## 1.3.0 (2025-07-01)
+
+* feat: added type declarations to NPM package ([f984f27](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/f984f27))
+
 ## 1.2.0 (2025-07-01)
 
 * feat: removed references to the old name ([352d795](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/352d795))
