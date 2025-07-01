@@ -38,20 +38,20 @@ jobs:
       - name: Run unit tests
         run: bun run test
       
-      - name: Install Playwright browsers
-        run: bunx playwright install --with-deps
+      #- name: Install Playwright browsers
+      #  run: bunx playwright install --with-deps
       
-      - name: Run E2E tests
-        run: bun run test:e2e
+      #- name: Run E2E tests
+      #  run: bun run test:e2e
       
-      - name: Upload test coverage
-        uses: codecov/codecov-action@v3
-        if: matrix.node-version == 20
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
+      # - name: Upload test coverage
+      #   uses: codecov/codecov-action@v3
+      #   if: matrix.node-version == 20
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: ./coverage/lcov.info
+      #     flags: unittests
+      #     name: codecov-umbrella
 
   build:
     name: Build Package

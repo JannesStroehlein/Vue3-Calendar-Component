@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -56,7 +57,7 @@ export const useCalendarStore = defineStore('calendar', () => {
           end: date.startOf('week').add(config.value.firstDayOfWeek! - 1, 'day').add(6, 'day').endOf('day')
         }
       case 'month':
-      default:
+      default: 
         const firstDay = date.startOf('month')
         const lastDay = date.endOf('month')
         const startOfFirstWeek = firstDay.startOf('week').add(config.value.firstDayOfWeek! - 1, 'day')

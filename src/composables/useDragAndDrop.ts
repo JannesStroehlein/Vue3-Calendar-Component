@@ -1,4 +1,4 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { Dayjs } from 'dayjs'
 import type { CalendarEventInternal, EventDropData, EventDropHandler } from '@/types'
 import { useCalendarStore } from '@/stores'

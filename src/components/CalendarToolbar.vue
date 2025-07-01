@@ -112,9 +112,7 @@
       case 'month':
         return props.currentDate.format('MMMM YYYY')
       case 'week':
-        const start = props.currentDate.startOf('week')
-        const end = props.currentDate.endOf('week')
-        return `${start.format('MMM D')} - ${end.format('MMM D, YYYY')}`
+        return `${props.currentDate.startOf('week').format('MMM D')} - ${props.currentDate.endOf('week').format('MMM D, YYYY')}`
       case 'day':
       case 'agenda':
         return props.currentDate.format('dddd, MMMM D, YYYY')
