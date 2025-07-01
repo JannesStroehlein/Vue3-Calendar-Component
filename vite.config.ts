@@ -14,8 +14,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'Vue3CalendarComponent',
-      formats: ['es'],
-      fileName: 'vue3-calendar-component',
+      formats: ['es', 'umd'],
+      fileName: (format) => `index.${format === 'es' ? 'js' : `${format}.cjs`}`
     },
     rollupOptions: {
       external: ['vue', 'vuetify', 'pinia', 'dayjs'],
