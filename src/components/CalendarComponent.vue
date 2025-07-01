@@ -11,15 +11,10 @@
       @navigate-today="store.navigateToday"
     />
 
-    <CalendarFilters
-      v-if="showFilters"
-      :filters="store.filters"
-      @filters-change="handleFiltersChange"
-    />
-
     <div class="calendar-container">
       <component
         :is="currentViewComponent"
+        :key="`${store.currentView}-${store.currentDate.format('YYYY-MM-DD')}`"
         :events="store.visibleEvents"
         :current-date="store.currentDate"
         :config="store.config"
@@ -28,19 +23,11 @@
         @date-click="handleDateClick"
       />
     </div>
-
-    <CalendarEventDialog
-      v-if="selectedEvent"
-      :event="selectedEvent"
-      :open="showEventDialog"
-      @close="closeEventDialog"
-      @update="handleEventUpdate"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, watch, ref } from 'vue'
+  import { computed, onMounted, watch } from 'vue'
   import dayjs, { type Dayjs } from 'dayjs'
   import { useCalendarStore } from '@/stores'
   import type {
@@ -55,12 +42,9 @@
     ViewChangeHandler,
     DateChangeHandler,
     EventClickData,
-    EventDropData,
-    CalendarEventInternal
+    EventDropData
   } from '@/types'
   import CalendarToolbar from './CalendarToolbar.vue'
-  import CalendarFilters from './CalendarFilters.vue'
-  import CalendarEventDialog from './CalendarEventDialog.vue'
   import MonthView from './views/MonthView.vue'
   import WeekView from './views/WeekView.vue'
   import DayView from './views/DayView.vue'
@@ -72,7 +56,6 @@
     currentDate?: string | Date | Dayjs
     config?: Partial<CalendarConfig>
     filters?: FilterOptions
-    showFilters?: boolean
     lazyLoad?: LazyLoadHandler
   }
 
@@ -86,22 +69,17 @@
 
   const props = withDefaults(defineProps<CalendarComponentProps>(), {
     events: () => [],
-    view: 'month',
-    showFilters: false
+    view: 'month'
   })
 
   const emit = defineEmits<CalendarComponentEmits>()
 
   const store = useCalendarStore()
-  const selectedEvent = ref<CalendarEventInternal | null>(null)
-  const showEventDialog = ref(false)
-  
-  // Expose showFilters to template
-  const showFilters = computed(() => props.showFilters)
 
   // Computed properties
   const currentViewComponent = computed(() => {
-    switch (store.currentView) {
+    const view = store.currentView
+    switch (view) {
       case 'month':
         return MonthView
       case 'week':
@@ -117,8 +95,6 @@
 
   // Event handlers
   const handleEventClick: EventClickHandler = (data) => {
-    selectedEvent.value = data.event
-    showEventDialog.value = true
     emit('event-click', data)
   }
 
@@ -138,20 +114,6 @@
   const handleDateChange: DateChangeHandler = (date) => {
     store.setCurrentDate(date)
     emit('date-change', date)
-  }
-
-  const handleFiltersChange = (newFilters: FilterOptions) => {
-    store.setFilters(newFilters)
-  }
-
-  const closeEventDialog = () => {
-    showEventDialog.value = false
-    selectedEvent.value = null
-  }
-
-  const handleEventUpdate = (eventId: string, updates: Partial<CalendarEvent>) => {
-    store.updateEvent(eventId, updates)
-    closeEventDialog()
   }
 
   // Watchers
@@ -215,6 +177,15 @@
     { immediate: true }
   )
 
+  // Debug watchers
+  watch(() => store.currentView, (newView) => {
+    console.log('CalendarComponent: store.currentView changed to:', newView)
+  })
+
+  watch(() => props.view, (newView) => {
+    console.log('CalendarComponent: props.view changed to:', newView)
+  })
+
   // Auto-load events when date range changes (for lazy loading)
   watch(
     () => store.visibleDateRange,
@@ -245,5 +216,7 @@
   .calendar-container {
     flex: 1;
     overflow: hidden;
+    min-height: 0;
+    position: relative;
   }
 </style>

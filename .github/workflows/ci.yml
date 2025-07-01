@@ -157,4 +157,3 @@ jobs:
       - name: Lint commit messages
         run: |
           echo "Checking commit messages..."
-          # Add your commit linting logic here

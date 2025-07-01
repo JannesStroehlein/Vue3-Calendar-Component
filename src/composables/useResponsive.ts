@@ -3,7 +3,10 @@ import { useDisplay } from 'vuetify'
 import type { CalendarView } from '@/types'
 
 export function useResponsive() {
-  const { mobile, tablet, desktop } = useDisplay()
+  const { mobile, width, sm, md, lg, xl, xxl } = useDisplay()
+
+  const tablet = computed(() => sm.value || md.value)
+  const desktop = computed(() => lg.value || xl.value || xxl.value)
 
   const recommendedView = computed((): CalendarView => {
     if (mobile.value) {
@@ -34,15 +37,21 @@ export function useResponsive() {
       return 40
     } else if (tablet.value) {
       return 50
+    } else if (width.value > 1920) {
+      // Very wide screens - increase height to prevent squashing
+      return 80
     } else {
       return 60
     }
   })
 
+  const isWideScreen = computed(() => width.value > 1920)
+
   return {
     mobile,
     tablet,
     desktop,
+    isWideScreen,
     recommendedView,
     eventDisplayMode,
     showSidebar,

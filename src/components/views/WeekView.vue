@@ -1,7 +1,16 @@
 <template>
   <div class="week-view">
-    <div class="week-header">
-      <div class="time-column-header"></div>
+    <div
+      class="week-header"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid
+      }"
+    >
+      <div
+        v-if="config.showTimeGrid"
+        class="time-column-header"
+      />
       <div
         v-for="day in weekDays"
         :key="day.format('YYYY-MM-DD')"
@@ -12,20 +21,36 @@
         }"
         @click="handleDateClick(day)"
       >
-        <div class="day-name">{{ day.format('ddd') }}</div>
-        <div class="day-number">{{ day.format('D') }}</div>
+        <div class="day-name">
+          {{ day.format('ddd') }}
+        </div>
+        <div class="day-number">
+          {{ day.format('D') }}
+        </div>
       </div>
     </div>
 
-    <div class="week-body">
-      <div class="time-column">
+    <div
+      class="week-body"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid
+      }"
+    >
+      <div
+        v-if="config.showTimeGrid"
+        class="time-column"
+      >
         <div
           v-for="slot in timeSlots"
           :key="`${slot.hour}-${slot.minute}`"
           class="time-slot"
-          :style="{ height: `${timeSlotHeight}px` }"
+          :style="{ height: `${timeSlotHeight}px`, width: config.showTimeGrid ? '100%' : '1px' }"
         >
-          <span class="time-label">{{ slot.label }}</span>
+          <span
+            v-if="config.showTimeGrid"
+            class="time-label"
+          >{{ slot.label }}</span>
         </div>
       </div>
 
@@ -48,7 +73,7 @@
             class="time-slot"
             :style="{ height: `${timeSlotHeight}px` }"
             :class="{ 'time-grid': config.showTimeGrid }"
-          ></div>
+          />
 
           <div
             v-for="event in getEventsForDay(day)"
@@ -70,8 +95,13 @@
                 class="mr-1"
               />
               <div class="event-text">
-                <div class="event-title">{{ event.title }}</div>
-                <div v-if="event.subtitle" class="event-subtitle">
+                <div class="event-title">
+                  {{ event.title }}
+                </div>
+                <div
+                  v-if="event.subtitle"
+                  class="event-subtitle"
+                >
                   {{ event.subtitle }}
                 </div>
                 <div class="event-time">
@@ -147,17 +177,29 @@
   }
 
   const getEventStyle = (event: CalendarEventInternal, day: Dayjs): CSSProperties => {
-    const dayStart = day.startOf('day')
-    const eventStart = event.startDate.isAfter(dayStart) ? event.startDate : dayStart
-    const eventEnd = event.endDate.isBefore(day.endOf('day')) ? event.endDate : day.endOf('day')
+    const [minHour, minMinute] = (props.config.minTime || '00:00').split(':').map(Number)
+    const [maxHour, maxMinute] = (props.config.maxTime || '24:00').split(':').map(Number)
     
-    const startMinutes = eventStart.diff(dayStart, 'minute')
+    const gridStart = day.hour(minHour).minute(minMinute).second(0)
+    const gridEnd = day.hour(maxHour).minute(maxMinute).second(0)
+    
+    // Clamp event times to the visible grid range
+    const eventStart = event.startDate.isBefore(gridStart) ? gridStart : event.startDate
+    const eventEnd = event.endDate.isAfter(gridEnd) ? gridEnd : event.endDate
+    
+    // Skip events that are completely outside the visible range
+    if (event.endDate.isBefore(gridStart) || event.startDate.isAfter(gridEnd)) {
+      return { display: 'none' }
+    }
+    
+    // Calculate minutes from the grid start time
+    const startMinutes = eventStart.diff(gridStart, 'minute')
     const duration = eventEnd.diff(eventStart, 'minute')
     
     const slotDuration = props.config.timeSlotDuration || 60
     const slotHeight = timeSlotHeight.value
     
-    const top = (startMinutes / slotDuration) * slotHeight
+    const top = Math.max(0, (startMinutes / slotDuration) * slotHeight)
     const height = Math.max((duration / slotDuration) * slotHeight, 20)
     
     return {
@@ -198,13 +240,27 @@
 <style scoped>
   .week-view {
     height: 100%;
+    min-height: 500px;
     display: flex;
     flex-direction: column;
   }
 
+  .show-time-grid {
+    grid-template-columns: 60px 1fr;
+  }
+  .hide-time-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .week-header.show-time-grid {
+    grid-template-columns: 60px repeat(7, 1fr);
+  }
+  .week-header.hide-time-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
   .week-header {
     display: grid;
-    grid-template-columns: 60px repeat(7, 1fr);
     border-bottom: 2px solid rgba(0, 0, 0, 0.12);
     background-color: #f5f5f5;
   }
@@ -259,18 +315,30 @@
   .week-body {
     flex: 1;
     display: grid;
-    grid-template-columns: 60px 1fr;
     overflow-y: auto;
+    min-height: 0;
+  }
+
+  @media (min-width: 1920px) {
+    .week-header.show-time-grid {
+      grid-template-columns: 80px repeat(7, 1fr);
+    }
+    .week-body.show-time-grid {
+      grid-template-columns: 80px 1fr;
+    }
   }
 
   .time-column {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
     background-color: #fafafa;
+    min-height: 100%;
+    overflow: hidden;
   }
 
   .time-slot {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     position: relative;
+    box-sizing: border-box;
   }
 
   .time-label {
@@ -284,12 +352,19 @@
   .days-container {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    min-height: 100%;
+    overflow: hidden;
   }
 
   .day-column {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
     position: relative;
     cursor: pointer;
+    min-height: 100%;
+  }
+
+  .day-column .time-slot {
+    flex-shrink: 0;
   }
 
   .day-column:hover {
@@ -302,6 +377,10 @@
 
   .day-column.weekend {
     background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  .day-column .time-slot {
+    border-bottom: none;
   }
 
   .day-column .time-slot.time-grid {
@@ -319,7 +398,6 @@
 
   .week-event:hover {
     opacity: 0.9;
-    transform: scale(1.02);
   }
 
   .week-event.event-completed .event-title {

@@ -1,7 +1,10 @@
 <template>
   <v-card class="calendar-filters pa-4 mb-4">
     <v-row>
-      <v-col cols="12" md="4">
+      <v-col
+        cols="12"
+        md="4"
+      >
         <v-text-field
           v-model="searchText"
           label="Search events"
@@ -13,7 +16,10 @@
         />
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col
+        cols="12"
+        md="4"
+      >
         <v-select
           v-model="selectedStatuses"
           :items="statusOptions"
@@ -37,7 +43,10 @@
         </v-select>
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col
+        cols="12"
+        md="4"
+      >
         <div class="d-flex align-center">
           <v-btn
             variant="outlined"

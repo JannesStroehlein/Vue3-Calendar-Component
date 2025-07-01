@@ -1,5 +1,8 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600">
+  <v-dialog
+    v-model="dialog"
+    max-width="600"
+  >
     <v-card v-if="event">
       <v-card-title class="d-flex align-center">
         <v-icon
@@ -20,31 +23,55 @@
 
       <v-card-text>
         <v-row>
-          <v-col cols="12" v-if="event.subtitle">
-            <div class="text-subtitle-1">{{ event.subtitle }}</div>
+          <v-col
+            v-if="event.subtitle"
+            cols="12"
+          >
+            <div class="text-subtitle-1">
+              {{ event.subtitle }}
+            </div>
           </v-col>
 
-          <v-col cols="12" v-if="event.description">
-            <div class="text-body-2">{{ event.description }}</div>
+          <v-col
+            v-if="event.description"
+            cols="12"
+          >
+            <div class="text-body-2">
+              {{ event.description }}
+            </div>
           </v-col>
 
           <v-col cols="6">
-            <div class="text-caption">Start</div>
+            <div class="text-caption">
+              Start
+            </div>
             <div>{{ formatDateTime(event.startDate) }}</div>
           </v-col>
 
           <v-col cols="6">
-            <div class="text-caption">End</div>
+            <div class="text-caption">
+              End
+            </div>
             <div>{{ formatDateTime(event.endDate) }}</div>
           </v-col>
 
-          <v-col cols="12" v-if="event.location">
-            <div class="text-caption">Location</div>
+          <v-col
+            v-if="event.location"
+            cols="12"
+          >
+            <div class="text-caption">
+              Location
+            </div>
             <div>{{ event.location }}</div>
           </v-col>
 
-          <v-col cols="12" v-if="eventDuration">
-            <div class="text-caption">Duration</div>
+          <v-col
+            v-if="eventDuration"
+            cols="12"
+          >
+            <div class="text-caption">
+              Duration
+            </div>
             <div>{{ eventDuration }}</div>
           </v-col>
         </v-row>

@@ -1,26 +1,29 @@
 <template>
-  <v-toolbar density="compact" class="calendar-toolbar">
+  <v-toolbar
+    density="compact"
+    class="calendar-toolbar"
+  >
     <v-btn
       icon
-      @click="$emit('navigate-previous')"
       :disabled="loading"
+      @click="$emit('navigate-previous')"
     >
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
 
     <v-btn
       icon
-      @click="$emit('navigate-next')"
       :disabled="loading"
+      @click="$emit('navigate-next')"
     >
       <v-icon>mdi-chevron-right</v-icon>
     </v-btn>
 
     <v-btn
       variant="text"
-      @click="$emit('navigate-today')"
       :disabled="loading"
       class="mx-2"
+      @click="$emit('navigate-today')"
     >
       Today
     </v-btn>
@@ -28,28 +31,43 @@
     <v-spacer />
 
     <div class="calendar-title">
-      <h2 class="text-h6">{{ formattedDate }}</h2>
+      <h2 class="text-h6">
+        {{ formattedDate }}
+      </h2>
     </div>
 
     <v-spacer />
 
     <v-btn-toggle
       :model-value="currentView"
-      @update:model-value="handleViewChange"
       mandatory
       variant="outlined"
       divided
+      class="view-toggle"
+      @update:model-value="handleViewChange"
     >
-      <v-btn value="month" size="small">
+      <v-btn
+        value="month"
+        size="small"
+      >
         Month
       </v-btn>
-      <v-btn value="week" size="small">
+      <v-btn
+        value="week"
+        size="small"
+      >
         Week
       </v-btn>
-      <v-btn value="day" size="small">
+      <v-btn
+        value="day"
+        size="small"
+      >
         Day
       </v-btn>
-      <v-btn value="agenda" size="small">
+      <v-btn
+        value="agenda"
+        size="small"
+      >
         Agenda
       </v-btn>
     </v-btn-toggle>
@@ -106,7 +124,9 @@
   })
 
   const handleViewChange = (view: CalendarView) => {
-    emit('view-change', view, props.currentDate)
+    if (view && view !== props.currentView) {
+      emit('view-change', view, props.currentDate)
+    }
   }
 </script>
 

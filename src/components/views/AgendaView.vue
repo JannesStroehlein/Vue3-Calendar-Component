@@ -14,17 +14,25 @@
     </div>
 
     <div class="agenda-content">
-      <div v-if="dayEvents.length === 0" class="no-events">
+      <div
+        v-if="dayEvents.length === 0"
+        class="no-events"
+      >
         <v-icon
           icon="mdi-calendar-blank"
           size="64"
           color="grey-lighten-2"
           class="mb-4"
         />
-        <p class="text-body-1 text-grey">No events scheduled for this day</p>
+        <p class="text-body-1 text-grey">
+          No events scheduled for this day
+        </p>
       </div>
 
-      <div v-else class="events-list">
+      <div
+        v-else
+        class="events-list"
+      >
         <v-card
           v-for="event in sortedEvents"
           :key="event.id"
@@ -48,7 +56,9 @@
                 :color="getEventColor(event)"
                 class="mr-2"
               />
-              <h4 class="event-title text-h6 flex-grow-1">{{ event.title }}</h4>
+              <h4 class="event-title text-h6 flex-grow-1">
+                {{ event.title }}
+              </h4>
               <v-chip
                 :color="getStatusColor(event.status || 'open')"
                 size="small"
@@ -58,28 +68,53 @@
               </v-chip>
             </div>
 
-            <div v-if="event.subtitle" class="event-subtitle text-subtitle-1 mb-2">
+            <div
+              v-if="event.subtitle"
+              class="event-subtitle text-subtitle-1 mb-2"
+            >
               {{ event.subtitle }}
             </div>
 
             <div class="event-time d-flex align-center mb-2">
-              <v-icon icon="mdi-clock-outline" size="small" class="mr-2" />
+              <v-icon
+                icon="mdi-clock-outline"
+                size="small"
+                class="mr-2"
+              />
               <span class="text-body-2">{{ formatEventTime(event) }}</span>
-              <span v-if="!event.isAllDay" class="ml-2 text-caption text-grey">
+              <span
+                v-if="!event.isAllDay"
+                class="ml-2 text-caption text-grey"
+              >
                 ({{ getEventDurationText(event) }})
               </span>
             </div>
 
-            <div v-if="event.location" class="event-location d-flex align-center mb-2">
-              <v-icon icon="mdi-map-marker" size="small" class="mr-2" />
+            <div
+              v-if="event.location"
+              class="event-location d-flex align-center mb-2"
+            >
+              <v-icon
+                icon="mdi-map-marker"
+                size="small"
+                class="mr-2"
+              />
               <span class="text-body-2">{{ event.location }}</span>
             </div>
 
-            <div v-if="event.description" class="event-description">
-              <p class="text-body-2 mb-0">{{ event.description }}</p>
+            <div
+              v-if="event.description"
+              class="event-description"
+            >
+              <p class="text-body-2 mb-0">
+                {{ event.description }}
+              </p>
             </div>
 
-            <div v-if="event.data && Object.keys(event.data).length > 0" class="event-metadata mt-3">
+            <div
+              v-if="event.data && Object.keys(event.data).length > 0"
+              class="event-metadata mt-3"
+            >
               <v-divider class="mb-2" />
               <div class="d-flex flex-wrap gap-2">
                 <v-chip

@@ -1,15 +1,25 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
       <v-app-bar-title>Vue 3 Calendar Copilot Demo</v-app-bar-title>
       <v-spacer />
-      <v-btn icon @click="toggleTheme">
+      <v-btn
+        icon
+        @click="toggleTheme"
+      >
         <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
       </v-btn>
     </v-app-bar>
 
     <v-main>
-      <v-container fluid class="pa-4">
+      <v-container
+        fluid
+        class="pa-4"
+      >
         <v-row>
           <v-col cols="12">
             <v-card>
@@ -25,6 +35,12 @@
               </v-card-title>
               
               <v-card-text>
+                <CalendarFilters
+                  :filters="filters"
+                  class="mb-4"
+                  @filters-change="handleFiltersChange"
+                />
+                
                 <div style="height: 600px;">
                   <CalendarComponent
                     :events="events"
@@ -33,7 +49,6 @@
                     :config="calendarConfig"
                     :filters="filters"
                     :lazy-load="loadEvents"
-                    show-filters
                     @event-click="handleEventClick"
                     @event-drop="handleEventDrop"
                     @date-click="handleDateClick"
@@ -47,38 +62,20 @@
         </v-row>
 
         <!-- Event Details Dialog -->
-        <v-dialog v-model="showEventDialog" max-width="500">
-          <v-card v-if="selectedEvent">
-            <v-card-title>
-              <v-icon v-if="selectedEvent.icon" :icon="selectedEvent.icon" class="mr-2" />
-              {{ selectedEvent.title }}
-            </v-card-title>
-            <v-card-text>
-              <v-list>
-                <v-list-item>
-                  <v-list-item-title>Start:</v-list-item-title>
-                  <v-list-item-subtitle>{{ formatDateTime(selectedEvent.startDate) }}</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>End:</v-list-item-title>
-                  <v-list-item-subtitle>{{ formatDateTime(selectedEvent.endDate) }}</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item v-if="selectedEvent.description">
-                  <v-list-item-title>Description:</v-list-item-title>
-                  <v-list-item-subtitle>{{ selectedEvent.description }}</v-list-item-subtitle>
-                </v-list-item>
-              </v-list>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn @click="showEventDialog = false">Close</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <CalendarEventDialog
+          v-if="selectedEvent"
+          :event="selectedEvent"
+          :open="showEventDialog"
+          @close="showEventDialog = false; selectedEvent = null"
+          @update="handleEventUpdate"
+        />
 
         <!-- Stats Card -->
         <v-row class="mt-4">
-          <v-col cols="12" md="6">
+          <v-col
+            cols="12"
+            md="6"
+          >
             <v-card>
               <v-card-title>Statistics</v-card-title>
               <v-card-text>
@@ -100,7 +97,10 @@
             </v-card>
           </v-col>
           
-          <v-col cols="12" md="6">
+          <v-col
+            cols="12"
+            md="6"
+          >
             <v-card>
               <v-card-title>Configuration</v-card-title>
               <v-card-text>
@@ -134,6 +134,9 @@
 import { ref, computed } from 'vue'
 import { useTheme } from 'vuetify'
 import dayjs from 'dayjs'
+import CalendarComponent from '../components/CalendarComponent.vue'
+import CalendarFilters from '../components/CalendarFilters.vue'
+import CalendarEventDialog from '../components/CalendarEventDialog.vue'
 import type {
   CalendarEvent,
   CalendarView,
@@ -141,7 +144,8 @@ import type {
   FilterOptions,
   EventDropData,
   LazyLoadData,
-  CalendarEventInternal
+  CalendarEventInternal,
+  EventClickData
 } from '../types'
 
 const theme = useTheme()
@@ -206,6 +210,19 @@ const pendingEvents = computed(() =>
 )
 
 // Methods
+const handleEventUpdate = (eventId: string, updates: Partial<CalendarEvent>) => {
+  console.log('Event updated:', eventId, updates)
+  const eventIndex = events.value.findIndex(e => e.id === eventId)
+  if (eventIndex !== -1) {
+    events.value[eventIndex] = {
+      ...events.value[eventIndex],
+      ...updates
+    }
+  }
+  showEventDialog.value = false
+  selectedEvent.value = null
+}
+
 const toggleTheme = () => {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
@@ -233,9 +250,9 @@ const loadEvents = async (data: LazyLoadData) => {
   return []
 }
 
-const handleEventClick = (event: CalendarEventInternal, nativeEvent: MouseEvent) => {
-  console.log('Event clicked:', event, nativeEvent)
-  selectedEvent.value = event
+const handleEventClick = (data: EventClickData) => {
+  console.log('Event clicked:', data)
+  selectedEvent.value = data.event
   showEventDialog.value = true
 }
 
@@ -253,6 +270,11 @@ const handleEventDrop = async (data: EventDropData) => {
   }
 }
 
+const handleFiltersChange = (newFilters: FilterOptions) => {
+  console.log('Filters changed:', newFilters)
+  filters.value = newFilters
+}
+
 const handleDateClick = (date: any) => {
   console.log('Date clicked:', date.format('YYYY-MM-DD'))
   currentDate.value = date
@@ -267,10 +289,6 @@ const handleViewChange = (view: CalendarView, date: any) => {
 const handleDateChange = (date: any) => {
   console.log('Date changed:', date.format('YYYY-MM-DD'))
   currentDate.value = date
-}
-
-const formatDateTime = (date: any) => {
-  return date.format('ddd, MMM D, YYYY [at] h:mm A')
 }
 </script>
 

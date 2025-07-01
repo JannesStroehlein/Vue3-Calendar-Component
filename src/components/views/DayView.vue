@@ -1,7 +1,16 @@
 <template>
   <div class="day-view">
-    <div class="day-header">
-      <div class="time-column-header"></div>
+    <div
+      class="day-header"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid
+      }"
+    >
+      <div
+        v-if="config.showTimeGrid"
+        class="time-column-header"
+      />
       <div
         class="day-header-content"
         :class="{
@@ -10,16 +19,32 @@
         }"
         @click="handleDateClick(currentDate)"
       >
-        <div class="day-name">{{ currentDate.format('dddd') }}</div>
-        <div class="day-number">{{ currentDate.format('D') }}</div>
-        <div class="day-month">{{ currentDate.format('MMMM YYYY') }}</div>
+        <div class="day-name">
+          {{ currentDate.format('dddd') }}
+        </div>
+        <div class="day-number">
+          {{ currentDate.format('D') }}
+        </div>
+        <div class="day-month">
+          {{ currentDate.format('MMMM YYYY') }}
+        </div>
       </div>
     </div>
 
-    <div class="day-body">
-      <div class="time-column">
+    <div
+      class="day-body"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid
+      }"
+    >
+      <div
+        v-if="config.showTimeGrid"
+        class="time-column"
+      >
         <div
           v-for="slot in timeSlots"
+          v-if="config.showTimeGrid"
           :key="`${slot.hour}-${slot.minute}`"
           class="time-slot"
           :style="{ height: `${timeSlotHeight}px` }"
@@ -36,13 +61,13 @@
           :style="{ height: `${timeSlotHeight}px` }"
           :class="{ 'time-grid': config.showTimeGrid }"
           @click="handleTimeSlotClick(slot)"
-        ></div>
+        />
 
         <div
           v-for="event in dayEvents"
           :key="event.id"
           class="day-event"
-                    :style="getEventStyle(event)"
+          :style="getEventStyle(event)"
 
           :class="{
             'event-completed': event.status === 'completed'
@@ -59,10 +84,15 @@
                 size="small"
                 class="mr-2"
               />
-              <div class="event-title">{{ event.title }}</div>
+              <div class="event-title">
+                {{ event.title }}
+              </div>
             </div>
             
-            <div v-if="event.subtitle" class="event-subtitle">
+            <div
+              v-if="event.subtitle"
+              class="event-subtitle"
+            >
               {{ event.subtitle }}
             </div>
             
@@ -70,12 +100,22 @@
               {{ formatEventTime(event) }}
             </div>
             
-            <div v-if="event.location" class="event-location">
-              <v-icon icon="mdi-map-marker" size="x-small" class="mr-1" />
+            <div
+              v-if="event.location"
+              class="event-location"
+            >
+              <v-icon
+                icon="mdi-map-marker"
+                size="x-small"
+                class="mr-1"
+              />
               {{ event.location }}
             </div>
             
-            <div v-if="event.description" class="event-description">
+            <div
+              v-if="event.description"
+              class="event-description"
+            >
               {{ event.description }}
             </div>
           </div>
@@ -123,7 +163,7 @@
   const props = defineProps<DayViewProps>()
   const emit = defineEmits<DayViewEmits>()
 
-  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(
+  const { handleDragStart: dragStart, handleDrop: _ } = useDragAndDrop(
     async (data) => {
       emit('event-drop', data.event, data.newStart)
     }
@@ -144,18 +184,30 @@
   })
 
   const getEventStyle = (event: CalendarEventInternal): CSSProperties => {
-    const dayStart = props.currentDate.startOf('day')
-    const eventStart = event.startDate.isAfter(dayStart) ? event.startDate : dayStart
-    const eventEnd = event.endDate.isBefore(props.currentDate.endOf('day')) ? event.endDate : props.currentDate.endOf('day')
+    const [minHour, minMinute] = (props.config.minTime || '00:00').split(':').map(Number)
+    const [maxHour, maxMinute] = (props.config.maxTime || '24:00').split(':').map(Number)
     
-    const startMinutes = eventStart.diff(dayStart, 'minute')
+    const gridStart = props.currentDate.hour(minHour).minute(minMinute).second(0)
+    const gridEnd = props.currentDate.hour(maxHour).minute(maxMinute).second(0)
+    
+    // Clamp event times to the visible grid range
+    const eventStart = event.startDate.isBefore(gridStart) ? gridStart : event.startDate
+    const eventEnd = event.endDate.isAfter(gridEnd) ? gridEnd : event.endDate
+    
+    // Skip events that are completely outside the visible range
+    if (event.endDate.isBefore(gridStart) || event.startDate.isAfter(gridEnd)) {
+      return { display: 'none' }
+    }
+    
+    // Calculate minutes from the grid start time
+    const startMinutes = eventStart.diff(gridStart, 'minute')
     const duration = eventEnd.diff(eventStart, 'minute')
     
     const slotDuration = props.config.timeSlotDuration || 60
     const slotHeight = timeSlotHeight.value
     
-    const top = (startMinutes / slotDuration) * slotHeight
-    const height = Math.max((duration / slotDuration) * slotHeight, 60)
+    const top = Math.max(0, (startMinutes / slotDuration) * slotHeight)
+    const height = Math.max((duration / slotDuration) * slotHeight, 20)
     
     return {
       position: 'absolute',
@@ -188,21 +240,25 @@
     }
   }
 
-  const handleDrop = (date: Dayjs) => {
-    drop(date)
-  }
 </script>
 
 <style scoped>
   .day-view {
     height: 100%;
+    min-height: 500px;
     display: flex;
     flex-direction: column;
   }
 
+  .show-time-grid {
+    grid-template-columns: 60px 1fr;
+  }
+  .hide-time-grid {
+    grid-template-columns: 1fr;
+  }
+
   .day-header {
     display: grid;
-    grid-template-columns: 60px 1fr;
     border-bottom: 2px solid rgba(0, 0, 0, 0.12);
     background-color: #f5f5f5;
   }
@@ -254,18 +310,27 @@
   .day-body {
     flex: 1;
     display: grid;
-    grid-template-columns: 60px 1fr;
     overflow-y: auto;
+    min-height: 0;
+  }
+
+  @media (min-width: 1920px) {
+    .show-time-grid {
+      grid-template-columns: 80px 1fr;
+    }
   }
 
   .time-column {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
     background-color: #fafafa;
+    min-height: 100%;
+    overflow: hidden;
   }
 
   .time-slot {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     position: relative;
+    box-sizing: border-box;
   }
 
   .time-label {
@@ -279,10 +344,19 @@
   .day-content {
     position: relative;
     cursor: pointer;
+    min-height: 100%;
+  }
+
+  .day-content .time-slot {
+    flex-shrink: 0;
   }
 
   .day-content:hover {
     background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  .day-content .time-slot {
+    border-bottom: none;
   }
 
   .day-content .time-slot.time-grid {
@@ -301,7 +375,6 @@
 
   .day-event:hover {
     opacity: 0.9;
-    transform: scale(1.02);
   }
 
   .day-event.event-completed .event-title {
