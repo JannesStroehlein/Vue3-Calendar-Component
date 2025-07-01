@@ -39,6 +39,12 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/unit/**/*.test.ts'],
     exclude: ['tests/e2e/**/*'],
-    globals: true
+    globals: true,
+    css: false, // Disable CSS processing in tests
+    server: {
+      deps: {
+        inline: ['vuetify'] // Force Vuetify to be processed by Vite
+      }
+    }
   }
 })

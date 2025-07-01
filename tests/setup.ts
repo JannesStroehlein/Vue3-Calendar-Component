@@ -58,5 +58,38 @@ config.global.stubs = {
   MonthView: true,
   WeekView: true,
   DayView: true,
-  AgendaView: true
+  AgendaView: true,
+  // Stub Vuetify components to avoid CSS import issues
+  VIcon: true,
+  VBtn: true,
+  VCard: true,
+  VCardTitle: true,
+  VCardText: true,
+  VCardActions: true,
+  VDialog: true,
+  VChip: true
 }
+
+// Mock CSS imports
+vi.mock('*.css', () => ({}))
+vi.mock('*.scss', () => ({}))
+
+// Mock Vuetify components to prevent CSS loading issues
+vi.mock('vuetify/components', () => ({
+  VIcon: { name: 'VIcon', template: '<div class="v-icon-mock"><slot /></div>' },
+  VBtn: { name: 'VBtn', template: '<button class="v-btn-mock"><slot /></button>' },
+  VCard: { name: 'VCard', template: '<div class="v-card-mock"><slot /></div>' },
+  VCardTitle: { name: 'VCardTitle', template: '<div class="v-card-title-mock"><slot /></div>' },
+  VCardText: { name: 'VCardText', template: '<div class="v-card-text-mock"><slot /></div>' },
+  VCardActions: { name: 'VCardActions', template: '<div class="v-card-actions-mock"><slot /></div>' },
+  VDialog: { name: 'VDialog', template: '<div class="v-dialog-mock"><slot /></div>' },
+  VChip: { name: 'VChip', template: '<div class="v-chip-mock"><slot /></div>' }
+}))
+
+vi.mock('vuetify/components/VIcon', () => ({
+  VIcon: { name: 'VIcon', template: '<div class="v-icon-mock"><slot /></div>' }
+}))
+
+vi.mock('vuetify/components/VBtn', () => ({
+  VBtn: { name: 'VBtn', template: '<button class="v-btn-mock"><slot /></button>' }
+}))
