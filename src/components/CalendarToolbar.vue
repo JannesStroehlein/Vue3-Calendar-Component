@@ -85,7 +85,16 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import type { Dayjs } from 'dayjs'
+  import { VIcon, VBtn } from 'vuetify/components'
   import type { CalendarView } from '@/types'
+
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VIcon,
+      VBtn
+    }
+  })
 
   export interface CalendarToolbarProps {
     currentDate: Dayjs

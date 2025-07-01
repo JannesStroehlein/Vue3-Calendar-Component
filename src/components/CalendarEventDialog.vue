@@ -116,8 +116,32 @@
 
 <script setup lang="ts">
   import { computed } from 'vue'
+  import { 
+    VIcon, 
+    VDialog, 
+    VCard, 
+    VCardTitle, 
+    VCardText, 
+    VCardActions, 
+    VBtn,
+    VChip
+  } from 'vuetify/components'
   import type { CalendarEventInternal, CalendarEvent, EventStatus } from '@/types'
   import { getEventColor, getEventDuration } from '@/utils'
+
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VIcon,
+      VDialog,
+      VCard,
+      VCardTitle,
+      VCardText,
+      VCardActions,
+      VBtn,
+      VChip
+    }
+  })
 
   export interface CalendarEventDialogProps {
     event: CalendarEventInternal | null

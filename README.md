@@ -37,12 +37,22 @@ import { createVuetify } from 'vuetify'
 import Vue3CalendarComponent from 'vue3-calendar-component'
 import App from './App.vue'
 
-// Styles
+// Required Vuetify styles and icons
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+
+// Component styles
 import 'vue3-calendar-component/style'
 
 const app = createApp(App)
 const pinia = createPinia()
-const vuetify = createVuetify()
+
+// Configure Vuetify with Material Design Icons
+const vuetify = createVuetify({
+  icons: {
+    defaultSet: 'mdi'
+  }
+})
 
 app.use(pinia)
 app.use(vuetify)
@@ -133,6 +143,37 @@ const event: CalendarEvent = {
 ```
 
 For complete type definition documentation, see [PUBLISHING_TYPES.md](./docs/PUBLISHING_TYPES.md).
+
+## Troubleshooting
+
+### "Failed to resolve component: v-icon" Error
+
+If you encounter this error, ensure that:
+
+1. **Vuetify is properly installed and configured:**
+```bash
+npm install vuetify @mdi/font
+```
+
+2. **Icons are properly configured in your Vuetify setup:**
+```typescript
+import { createVuetify } from 'vuetify'
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+
+const vuetify = createVuetify({
+  icons: {
+    defaultSet: 'mdi' // This is important!
+  }
+})
+
+app.use(vuetify)
+```
+
+3. **All required dependencies are peer dependencies:**
+Make sure `vue`, `vuetify`, and optionally `pinia` are installed in your project as they are peer dependencies.
+
+The calendar component has been updated to properly import Vuetify components for library usage, but proper Vuetify configuration is still required in the consuming application.
 
 ## Contributing
 

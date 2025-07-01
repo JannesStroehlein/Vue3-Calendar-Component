@@ -127,6 +127,7 @@
 <script setup lang="ts">
   import { computed, CSSProperties } from 'vue'
   import type { Dayjs } from 'dayjs'
+  import { VIcon } from 'vuetify/components/VIcon'
   import type {
     CalendarEventInternal,
     CalendarConfig,
@@ -145,6 +146,13 @@
     isWeekend
   } from '@/utils'
   import { useDragAndDrop, useResponsive } from '@/composables'
+
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VIcon
+    }
+  })
 
   export interface DayViewProps {
     events: CalendarEventInternal[]

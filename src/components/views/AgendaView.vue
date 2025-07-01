@@ -159,6 +159,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import dayjs, { type Dayjs } from 'dayjs'
+  import { VIcon } from 'vuetify/components/VIcon'
   import type {
     CalendarEventInternal,
     CalendarConfig,
@@ -174,6 +175,13 @@
     formatEventTime,
     sortEventsByStartTime
   } from '@/utils'
+
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VIcon
+    }
+  })
 
   export interface AgendaViewProps {
     events: CalendarEventInternal[]

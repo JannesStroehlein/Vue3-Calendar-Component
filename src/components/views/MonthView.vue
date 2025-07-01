@@ -68,6 +68,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import type { Dayjs } from 'dayjs'
+  import { VIcon } from 'vuetify/components/VIcon'
   import type {
     CalendarEventInternal,
     CalendarConfig,
@@ -84,6 +85,13 @@
     isWeekend
   } from '@/utils'
   import { useDragAndDrop } from '@/composables'
+
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VIcon
+    }
+  })
 
   export interface MonthViewProps {
     events: CalendarEventInternal[]
