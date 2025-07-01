@@ -1,3 +1,7 @@
+## 1.2.0 (2025-07-01)
+
+* feat: removed references to the old name ([352d795](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/352d795))
+
 ## 1.1.0 (2025-07-01)
 
 * feat: changed the package name ([d019f3c](https://github.com/JannesStroehlein/Vue3-Calendar/commit/d019f3c))
