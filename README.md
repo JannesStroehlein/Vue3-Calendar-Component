@@ -37,6 +37,9 @@ import { createVuetify } from 'vuetify'
 import Vue3CalendarComponent from 'vue3-calendar-component'
 import App from './App.vue'
 
+// Styles
+import 'vue3-calendar-component/style'
+
 const app = createApp(App)
 const pinia = createPinia()
 const vuetify = createVuetify()
