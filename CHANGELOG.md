@@ -1,3 +1,7 @@
+## <small>1.3.1 (2025-07-01)</small>
+
+* fix: module exports incorrectly configured ([056068b](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/056068b))
+
 ## 1.3.0 (2025-07-01)
 
 * feat: added type declarations to NPM package ([f984f27](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/f984f27))
