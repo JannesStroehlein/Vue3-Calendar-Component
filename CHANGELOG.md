@@ -1,3 +1,9 @@
+## <small>1.3.2 (2025-07-01)</small>
+
+* fix: cSS issue in tests ([ef3bb36](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ef3bb36))
+* fix: vIcon not working ([f2e68f1](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/f2e68f1))
+* docs: updated README to show style import ([e46c8eb](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/e46c8eb))
+
 ## <small>1.3.1 (2025-07-01)</small>
 
 * fix: module exports incorrectly configured ([056068b](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/056068b))
