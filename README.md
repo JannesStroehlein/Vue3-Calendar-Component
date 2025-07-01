@@ -85,6 +85,44 @@ const handleEventDrop = (event: CalendarEvent, newDate: Date) => {
 
 For detailed documentation, examples, and API reference, see the [docs](./docs) folder.
 
+## Contributing
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) for automated semantic versioning and changelog generation.
+
+### Quick Start for Contributors
+
+```bash
+# Clone and setup
+git clone <repository-url>
+cd vue3-calendar-copilot
+npm install
+
+# Make changes and commit with conventional commits
+npm run commit  # Interactive commit helper
+
+# Or commit manually
+git commit -m "feat: add new feature"
+git commit -m "fix: resolve bug"
+```
+
+### Commit Types
+- `feat`: New features → Minor version bump
+- `fix`: Bug fixes → Patch version bump  
+- `docs`: Documentation changes
+- `test`: Adding tests
+- `refactor`: Code refactoring
+- `chore`: Maintenance tasks
+
+For detailed contributing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+### Automated Releases
+
+Releases are automatically created when commits are pushed to the `main` branch:
+- Semantic versioning based on commit messages
+- Automatic changelog generation
+- GitHub releases with release notes
+- NPM package publishing
+
 ## Development
 
 ```bash

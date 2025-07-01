@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run pre-commit checks
+bun run lint
+
+# Check if commit message follows conventional commit format
+exec < /dev/tty && bunx cz --hook || true
