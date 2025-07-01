@@ -1,4 +1,4 @@
-# Vue 3 Calendar Copilot - Project Summary
+# Vue 3 Calendar Component - Project Summary
 
 ## 🎉 Project Complete!
 
@@ -40,7 +40,7 @@ You now have a comprehensive Vue 3 Calendar component library with all the reque
 ## 📁 Project Structure
 
 ```
-vue3-calendar-copilot/
+vue3-calendar-component/
 ├── .github/workflows/          # CI/CD pipeline
 ├── docs/                       # Documentation
 ├── src/
@@ -112,7 +112,7 @@ bun format
 </template>
 
 <script setup lang="ts">
-import type { CalendarEvent } from 'vue3-calendar-copilot'
+import type { CalendarEvent } from 'vue3-calendar-component'
 
 const events: CalendarEvent[] = [
   {

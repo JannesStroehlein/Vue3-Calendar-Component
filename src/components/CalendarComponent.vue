@@ -1,5 +1,5 @@
 <template>
-  <div class="calendar-copilot">
+  <div class="calendar-component">
     <CalendarToolbar
       :current-date="store.currentDate"
       :current-view="store.currentView"
@@ -206,7 +206,7 @@
 </script>
 
 <style scoped>
-  .calendar-copilot {
+  .calendar-component {
     display: flex;
     flex-direction: column;
     height: 100%;

@@ -1,6 +1,6 @@
 # Semantic Versioning & Conventional Commits Implementation
 
-This document summarizes the semantic versioning and automated release system implemented for the Vue 3 Calendar Copilot project.
+This document summarizes the semantic versioning and automated release system implemented for the Vue 3 Calendar Component project.
 
 ## 🎯 What Was Implemented
 

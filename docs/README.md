@@ -1,8 +1,8 @@
-# Vue 3 Calendar Copilot Documentation
+# Vue 3 Calendar Component Documentation
 
 ## Overview
 
-Vue 3 Calendar Copilot is a comprehensive calendar component library built with Vue 3, Vuetify 3, and TypeScript. It provides multiple view modes, event management, drag & drop functionality, and extensive customization options.
+Vue 3 Calendar Component is a comprehensive calendar component library built with Vue 3, Vuetify 3, and TypeScript. It provides multiple view modes, event management, drag & drop functionality, and extensive customization options.
 
 ## Table of Contents
 
@@ -23,19 +23,19 @@ Vue 3 Calendar Copilot is a comprehensive calendar component library built with 
 ### NPM
 
 ```bash
-npm install vue3-calendar-copilot
+npm install vue3-calendar-component
 ```
 
 ### Yarn
 
 ```bash
-yarn add vue3-calendar-copilot
+yarn add vue3-calendar-component
 ```
 
 ### Bun
 
 ```bash
-bun add vue3-calendar-copilot
+bun add vue3-calendar-component
 ```
 
 ## Quick Start
@@ -46,7 +46,7 @@ bun add vue3-calendar-copilot
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
-import Vue3CalendarComponent from 'vue3-calendar-copilot'
+import Vue3CalendarComponent from 'vue3-calendar-component'
 import 'vuetify/styles'
 import App from './App.vue'
 
@@ -83,7 +83,7 @@ app.mount('#app')
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { CalendarEvent } from 'vue3-calendar-copilot'
+import type { CalendarEvent } from 'vue3-calendar-component'
 
 const events = ref<CalendarEvent[]>([
   {
@@ -518,7 +518,7 @@ import type {
   FilterOptions,
   EventDropData,
   LazyLoadData
-} from 'vue3-calendar-copilot'
+} from 'vue3-calendar-component'
 
 const events = ref<CalendarEvent[]>([])
 const currentView = ref<CalendarView>('month')
@@ -570,4 +570,4 @@ const handleViewChange = (view: CalendarView, date: any) => {
 </script>
 ```
 
-This documentation provides a comprehensive guide to using Vue 3 Calendar Copilot. For more advanced usage and customization options, refer to the source code and type definitions.
+This documentation provides a comprehensive guide to using Vue 3 Calendar Component. For more advanced usage and customization options, refer to the source code and type definitions.

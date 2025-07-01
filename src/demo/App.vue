@@ -5,7 +5,7 @@
       color="primary"
       dark
     >
-      <v-app-bar-title>Vue 3 Calendar Copilot Demo</v-app-bar-title>
+      <v-app-bar-title>Vue 3 Calendar Component Demo</v-app-bar-title>
       <v-spacer />
       <v-btn
         icon

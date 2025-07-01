@@ -1,4 +1,4 @@
-# Vue 3 Calendar Copilot
+# Vue 3 Calendar Component
 
 A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advanced features including drag & drop, lazy loading, filtering, and multiple view modes.
 
@@ -17,11 +17,11 @@ A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advance
 ## Installation
 
 ```bash
-npm install vue3-calendar-copilot
+npm install vue3-calendar-component
 # or
-yarn add vue3-calendar-copilot
+yarn add vue3-calendar-component
 # or
-bun add vue3-calendar-copilot
+bun add vue3-calendar-component
 ```
 
 ## Quick Start
@@ -30,7 +30,7 @@ bun add vue3-calendar-copilot
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
-import Vue3CalendarComponent from 'vue3-calendar-copilot'
+import Vue3CalendarComponent from 'vue3-calendar-component'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -58,7 +58,7 @@ app.mount('#app')
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { CalendarEvent } from 'vue3-calendar-copilot'
+import type { CalendarEvent } from 'vue3-calendar-component'
 
 const events = ref<CalendarEvent[]>([
   {
@@ -93,8 +93,8 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 
 ```bash
 # Clone and setup
-git clone <repository-url>
-cd vue3-calendar-copilot
+git clone https://github.com/JannesStroehlein/Vue3-Calendar-Component
+cd vue3-calendar-component
 npm install
 
 # Make changes and commit with conventional commits

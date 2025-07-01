@@ -67,7 +67,7 @@ describe('CalendarComponent', () => {
   it('renders correctly', () => {
     const wrapper = createWrapper()
     expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find('.calendar-copilot').exists()).toBe(true)
+    expect(wrapper.find('.calendar-component').exists()).toBe(true)
   })
 
   it('displays events correctly', () => {
@@ -122,7 +122,7 @@ describe('CalendarComponent', () => {
   it('renders correctly without optional features', () => {
     const wrapper = createWrapper()
     // Calendar component should render correctly without filters or dialogs
-    expect(wrapper.find('.calendar-copilot').exists()).toBe(true)
+    expect(wrapper.find('.calendar-component').exists()).toBe(true)
     expect(wrapper.find('.calendar-container').exists()).toBe(true)
   })
 })

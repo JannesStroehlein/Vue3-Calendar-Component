@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Vue3 Calendar Copilot
+Copyright (c) 2025 Jannes Ströhlein
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

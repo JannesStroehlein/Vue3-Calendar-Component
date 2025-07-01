@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "vue3-calendar-copilot",
+      "name": "vue3-calendar-component",
       "dependencies": {
         "@mdi/font": "^7.4.47",
         "@mdi/js": "^7.4.47",
