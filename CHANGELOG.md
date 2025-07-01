@@ -1,3 +1,14 @@
+## 1.0.0 (2025-07-01)
+
+* ci: added commit linting & semantic versioning ([af146a4](https://github.com/JannesStroehlein/Vue3-Calendar/commit/af146a4))
+* ci: fixed missing permission ([e1930b5](https://github.com/JannesStroehlein/Vue3-Calendar/commit/e1930b5))
+* ci: removed commit-msg hook ([1d2ee80](https://github.com/JannesStroehlein/Vue3-Calendar/commit/1d2ee80))
+* chore: bump actions/upload-artifact version ([2a127b4](https://github.com/JannesStroehlein/Vue3-Calendar/commit/2a127b4))
+* fix: CI issues ([2fc156d](https://github.com/JannesStroehlein/Vue3-Calendar/commit/2fc156d))
+* bufixes ([1919425](https://github.com/JannesStroehlein/Vue3-Calendar/commit/1919425))
+* fixed tests ([977fe22](https://github.com/JannesStroehlein/Vue3-Calendar/commit/977fe22))
+* Initial Commit ([6b6bbd4](https://github.com/JannesStroehlein/Vue3-Calendar/commit/6b6bbd4))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
