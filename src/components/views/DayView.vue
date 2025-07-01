@@ -44,7 +44,6 @@
       >
         <div
           v-for="slot in timeSlots"
-          v-if="config.showTimeGrid"
           :key="`${slot.hour}-${slot.minute}`"
           class="time-slot"
           :style="{ height: `${timeSlotHeight}px` }"
@@ -163,7 +162,7 @@
   const props = defineProps<DayViewProps>()
   const emit = defineEmits<DayViewEmits>()
 
-  const { handleDragStart: dragStart, handleDrop: _ } = useDragAndDrop(
+  const { handleDragStart: dragStart } = useDragAndDrop(
     async (data) => {
       emit('event-drop', data.event, data.newStart)
     }
