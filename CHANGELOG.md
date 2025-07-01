@@ -1,3 +1,8 @@
+## 1.1.0 (2025-07-01)
+
+* feat: changed the package name ([d019f3c](https://github.com/JannesStroehlein/Vue3-Calendar/commit/d019f3c))
+* ci: renamed package ([9933804](https://github.com/JannesStroehlein/Vue3-Calendar/commit/9933804))
+
 ## 1.0.0 (2025-07-01)
 
 * ci: added commit linting & semantic versioning ([af146a4](https://github.com/JannesStroehlein/Vue3-Calendar/commit/af146a4))
