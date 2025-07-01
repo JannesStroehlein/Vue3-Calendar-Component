@@ -1,14 +1,21 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import dts from 'vite-plugin-dts';
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    dts({
+      include: ['src/**/*'],
+    })
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'Vue3CalendarComponent',
-      fileName: 'index'
+      formats: ['es'],
+      fileName: 'vue3-calendar-component',
     },
     rollupOptions: {
       external: ['vue', 'vuetify', 'pinia', 'dayjs'],

@@ -4,13 +4,17 @@
   "description": "A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advanced features",
   "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE.md"
   ],
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
-    "build": "vue-tsc && vite build",
+    "prebuild": "rimraf dist && npm run type-check",
+    "build": "vite build && vue-tsc --project tsconfig.build.json --emitDeclarationOnly",
     "build:demo": "vite build --config vite.demo.config.ts",
     "preview": "vite preview",
     "test": "vitest",
@@ -42,11 +46,17 @@
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
     "dayjs": "^1.11.13",
-    "pinia": "^2.3.1",
-    "tailwindcss": "^3.4.17",
-    "typescript-eslint": "^8.35.1",
-    "vue": "^3.5.17",
-    "vuetify": "^3.8.11"
+    "tailwindcss": "^3.4.17"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0",
+    "vuetify": "^3.8.0",
+    "pinia": "^2.3.0"
+  },
+  "peerDependenciesMeta": {
+    "pinia": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -58,7 +68,7 @@
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^20.19.2",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/parser": "^8.35.1",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
@@ -72,11 +82,18 @@
     "lint-staged": "^15.5.2",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
+    "pinia": "^2.3.1",
+    "rimraf": "^6.0.1",
     "semantic-release": "^24.2.6",
     "typescript": "^5.6.3",
-    "vite": "^5.4.19",
+    "typescript-eslint": "^8.35.1",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "4.5.4",
     "vitest": "^1.6.1",
-    "vue-tsc": "^2.1.10"
+    "vue": "^3.5.17",
+    "vue-tsc": "^2.1.10",
+    "vuetify": "^3.8.11",
+    "ajv": "^8.17.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue}": [
