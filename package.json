@@ -1,5 +1,5 @@
 {
-  "name": "vue3-calendar-copilot",
+  "name": "vue3-calendar",
   "version": "1.0.0",
   "description": "A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advanced features",
   "type": "module",
@@ -36,7 +36,7 @@
     "typescript",
     "component"
   ],
-  "author": "Vue3 Calendar Copilot",
+  "author": "Jannes Ströhlein",
   "license": "MIT",
   "dependencies": {
     "@mdi/font": "^7.4.47",
