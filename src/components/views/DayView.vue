@@ -1,0 +1,362 @@
+<template>
+  <div class="day-view">
+    <div class="day-header">
+      <div class="time-column-header"></div>
+      <div
+        class="day-header-content"
+        :class="{
+          'today': isToday(currentDate),
+          'weekend': isWeekend(currentDate)
+        }"
+        @click="handleDateClick(currentDate)"
+      >
+        <div class="day-name">{{ currentDate.format('dddd') }}</div>
+        <div class="day-number">{{ currentDate.format('D') }}</div>
+        <div class="day-month">{{ currentDate.format('MMMM YYYY') }}</div>
+      </div>
+    </div>
+
+    <div class="day-body">
+      <div class="time-column">
+        <div
+          v-for="slot in timeSlots"
+          :key="`${slot.hour}-${slot.minute}`"
+          class="time-slot"
+          :style="{ height: `${timeSlotHeight}px` }"
+        >
+          <span class="time-label">{{ slot.label }}</span>
+        </div>
+      </div>
+
+      <div class="day-content">
+        <div
+          v-for="slot in timeSlots"
+          :key="`${currentDate.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
+          class="time-slot"
+          :style="{ height: `${timeSlotHeight}px` }"
+          :class="{ 'time-grid': config.showTimeGrid }"
+          @click="handleTimeSlotClick(slot)"
+        ></div>
+
+        <div
+          v-for="event in dayEvents"
+          :key="event.id"
+          class="day-event"
+                    :style="getEventStyle(event)"
+
+          :class="{
+            'event-completed': event.status === 'completed'
+          }"
+          draggable
+          @click.stop="handleEventClick({ event, nativeEvent: $event})"
+          @dragstart="handleDragStart(event, $event.target)"
+        >
+          <div class="event-content">
+            <div class="event-header">
+              <v-icon
+                v-if="event.icon"
+                :icon="event.icon"
+                size="small"
+                class="mr-2"
+              />
+              <div class="event-title">{{ event.title }}</div>
+            </div>
+            
+            <div v-if="event.subtitle" class="event-subtitle">
+              {{ event.subtitle }}
+            </div>
+            
+            <div class="event-time">
+              {{ formatEventTime(event) }}
+            </div>
+            
+            <div v-if="event.location" class="event-location">
+              <v-icon icon="mdi-map-marker" size="x-small" class="mr-1" />
+              {{ event.location }}
+            </div>
+            
+            <div v-if="event.description" class="event-description">
+              {{ event.description }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { computed, CSSProperties } from 'vue'
+  import type { Dayjs } from 'dayjs'
+  import type {
+    CalendarEventInternal,
+    CalendarConfig,
+    EventClickHandler,
+    DateClickHandler,
+    TimeSlot,
+    EventClickData
+  } from '@/types'
+  import {
+    getEventsForDay,
+    generateTimeSlots,
+    getEventColor,
+    getEventTextColor,
+    formatEventTime,
+    isToday,
+    isWeekend
+  } from '@/utils'
+  import { useDragAndDrop, useResponsive } from '@/composables'
+
+  export interface DayViewProps {
+    events: CalendarEventInternal[]
+    currentDate: Dayjs
+    config: CalendarConfig
+  }
+
+  export interface DayViewEmits {
+    (e: 'event-click', data: EventClickData): void
+    (e: 'event-drop', event: CalendarEventInternal, newDate: Dayjs): void
+    (e: 'date-click', date: Dayjs): void
+    (e: 'time-slot-click', date: Dayjs, slot: TimeSlot): void
+  }
+
+  const props = defineProps<DayViewProps>()
+  const emit = defineEmits<DayViewEmits>()
+
+  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(
+    async (data) => {
+      emit('event-drop', data.event, data.newStart)
+    }
+  )
+
+  const { timeSlotHeight } = useResponsive()
+
+  const timeSlots = computed(() => {
+    return generateTimeSlots(
+      props.config.minTime,
+      props.config.maxTime,
+      props.config.timeSlotDuration
+    )
+  })
+
+  const dayEvents = computed(() => {
+    return getEventsForDay(props.events, props.currentDate)
+  })
+
+  const getEventStyle = (event: CalendarEventInternal): CSSProperties => {
+    const dayStart = props.currentDate.startOf('day')
+    const eventStart = event.startDate.isAfter(dayStart) ? event.startDate : dayStart
+    const eventEnd = event.endDate.isBefore(props.currentDate.endOf('day')) ? event.endDate : props.currentDate.endOf('day')
+    
+    const startMinutes = eventStart.diff(dayStart, 'minute')
+    const duration = eventEnd.diff(eventStart, 'minute')
+    
+    const slotDuration = props.config.timeSlotDuration || 60
+    const slotHeight = timeSlotHeight.value
+    
+    const top = (startMinutes / slotDuration) * slotHeight
+    const height = Math.max((duration / slotDuration) * slotHeight, 60)
+    
+    return {
+      position: 'absolute',
+      top: `${top}px`,
+      height: `${height}px`,
+      left: '8px',
+      right: '8px',
+      backgroundColor: getEventColor(event),
+      color: getEventTextColor(event),
+      zIndex: 10
+    }
+  }
+
+  const handleEventClick: EventClickHandler = (data) => {
+    emit('event-click', data)
+  }
+
+  const handleDateClick: DateClickHandler = (date) => {
+    emit('date-click', date)
+  }
+
+  const handleTimeSlotClick = (slot: TimeSlot) => {
+    const slotDate = props.currentDate.hour(slot.hour).minute(slot.minute)
+    emit('time-slot-click', slotDate, slot)
+  }
+
+  const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
+    if (target instanceof HTMLElement) {
+      dragStart(event, target)
+    }
+  }
+
+  const handleDrop = (date: Dayjs) => {
+    drop(date)
+  }
+</script>
+
+<style scoped>
+  .day-view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .day-header {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+    background-color: #f5f5f5;
+  }
+
+  .time-column-header {
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .day-header-content {
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .day-header-content:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .day-header-content.today {
+    background-color: rgba(25, 118, 210, 0.04);
+  }
+
+  .day-header-content.weekend {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .day-name {
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .day-number {
+    font-size: 2rem;
+    font-weight: 500;
+    margin: 8px 0;
+  }
+
+  .today .day-number {
+    color: #1976d2;
+  }
+
+  .day-month {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .day-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    overflow-y: auto;
+  }
+
+  .time-column {
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    background-color: #fafafa;
+  }
+
+  .time-slot {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    position: relative;
+  }
+
+  .time-label {
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .day-content {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .day-content:hover {
+    background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  .day-content .time-slot.time-grid {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .day-event {
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .day-event:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+
+  .day-event.event-completed .event-title {
+    text-decoration: line-through;
+  }
+
+  .event-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .event-title {
+    font-weight: 600;
+    line-height: 1.2;
+    flex: 1;
+  }
+
+  .event-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .event-time {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .event-location {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  .event-description {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    line-height: 1.3;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+</style>
