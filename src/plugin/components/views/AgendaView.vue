@@ -4,125 +4,71 @@
       <h3 class="text-h6">
         {{ currentDate.format('dddd, MMMM D, YYYY') }}
       </h3>
-      <v-chip
-        v-if="dayEvents.length > 0"
-        color="primary"
-        size="small"
-      >
+      <v-chip v-if="dayEvents.length > 0" color="primary" size="small">
         {{ dayEvents.length }} event{{ dayEvents.length > 1 ? 's' : '' }}
       </v-chip>
     </div>
 
     <div class="agenda-content">
-      <div
-        v-if="dayEvents.length === 0"
-        class="no-events"
-      >
-        <v-icon
-          icon="mdi-calendar-blank"
-          size="64"
-          color="grey-lighten-2"
-          class="mb-4"
-        />
-        <p class="text-body-1 text-grey">
-          No events scheduled for this day
-        </p>
+      <div v-if="dayEvents.length === 0" class="no-events">
+        <v-icon icon="mdi-calendar-blank" size="64" color="grey-lighten-2" class="mb-4" />
+        <p class="text-body-1 text-grey">No events scheduled for this day</p>
       </div>
 
-      <div
-        v-else
-        class="events-list"
-      >
+      <div v-else class="events-list">
         <v-card
           v-for="event in sortedEvents"
           :key="event.id"
           class="agenda-event mb-4"
           :style="{
-            borderLeft: `4px solid ${getEventColor(event)}`
+            borderLeft: `4px solid ${getEventColor(event)}`,
           }"
           :class="{
             'event-completed': event.status === 'completed',
             'event-cancelled': event.status === 'cancelled',
-            'event-overdue': isEventOverdue(event)
+            'event-overdue': isEventOverdue(event),
           }"
           elevation="2"
-          @click="handleEventClick({ event, nativeEvent: $event})"
+          @click="handleEventClick({ event, nativeEvent: $event })"
         >
           <v-card-text class="pa-4">
             <div class="event-header d-flex align-center mb-2">
-              <v-icon
-                v-if="event.icon"
-                :icon="event.icon"
-                :color="getEventColor(event)"
-                class="mr-2"
-              />
+              <v-icon v-if="event.icon" :icon="event.icon" :color="getEventColor(event)" class="mr-2" />
               <h4 class="event-title text-h6 flex-grow-1">
                 {{ event.title }}
               </h4>
-              <v-chip
-                :color="getStatusColor(event.status || 'open')"
-                size="small"
-                variant="outlined"
-              >
+              <v-chip :color="getStatusColor(event.status || 'open')" size="small" variant="outlined">
                 {{ formatStatus(event.status || 'open') }}
               </v-chip>
             </div>
 
-            <div
-              v-if="event.subtitle"
-              class="event-subtitle text-subtitle-1 mb-2"
-            >
+            <div v-if="event.subtitle" class="event-subtitle text-subtitle-1 mb-2">
               {{ event.subtitle }}
             </div>
 
             <div class="event-time d-flex align-center mb-2">
-              <v-icon
-                icon="mdi-clock-outline"
-                size="small"
-                class="mr-2"
-              />
+              <v-icon icon="mdi-clock-outline" size="small" class="mr-2" />
               <span class="text-body-2">{{ formatEventTime(event) }}</span>
-              <span
-                v-if="!event.isAllDay"
-                class="ml-2 text-caption text-grey"
-              >
+              <span v-if="!event.isAllDay" class="ml-2 text-caption text-grey">
                 ({{ getEventDurationText(event) }})
               </span>
             </div>
 
-            <div
-              v-if="event.location"
-              class="event-location d-flex align-center mb-2"
-            >
-              <v-icon
-                icon="mdi-map-marker"
-                size="small"
-                class="mr-2"
-              />
+            <div v-if="event.location" class="event-location d-flex align-center mb-2">
+              <v-icon icon="mdi-map-marker" size="small" class="mr-2" />
               <span class="text-body-2">{{ event.location }}</span>
             </div>
 
-            <div
-              v-if="event.description"
-              class="event-description"
-            >
+            <div v-if="event.description" class="event-description">
               <p class="text-body-2 mb-0">
                 {{ event.description }}
               </p>
             </div>
 
-            <div
-              v-if="event.data && Object.keys(event.data).length > 0"
-              class="event-metadata mt-3"
-            >
+            <div v-if="event.data && Object.keys(event.data).length > 0" class="event-metadata mt-3">
               <v-divider class="mb-2" />
               <div class="d-flex flex-wrap gap-2">
-                <v-chip
-                  v-for="(value, key) in event.data"
-                  :key="key"
-                  size="x-small"
-                  variant="outlined"
-                >
+                <v-chip v-for="(value, key) in event.data" :key="key" size="x-small" variant="outlined">
                   {{ key }}: {{ value }}
                 </v-chip>
               </div>
@@ -157,37 +103,28 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import dayjs, { type Dayjs } from 'dayjs'
-  import { VIcon } from 'vuetify/components/VIcon'
   import type {
+    AgendaViewProps,
+    CalendarEvent,
     CalendarEventInternal,
-    CalendarConfig,
+    EventClickData,
     EventClickHandler,
     EventStatus,
-    CalendarEvent,
-    EventClickData
-  } from '@/types'
+  } from '@/plugin/types'
   import {
-    getEventsForDay,
+    formatEventTime,
     getEventColor,
     getEventDuration,
-    formatEventTime,
-    sortEventsByStartTime
-  } from '@/utils'
-
+    getEventsForDay,
+    sortEventsByStartTime,
+  } from '@/plugin/utils'
+  import dayjs from 'dayjs'
+  import { computed } from 'vue'
+  import { VIcon } from 'vuetify/components/VIcon'
   // Component registration for library usage
   defineOptions({
-    components: {
-      VIcon
-    }
+    name: 'AgendaView',
   })
-
-  export interface AgendaViewProps {
-    events: CalendarEventInternal[]
-    currentDate: Dayjs
-    config: CalendarConfig
-  }
 
   export interface AgendaViewEmits {
     (e: 'event-click', data: EventClickData): void
@@ -229,7 +166,7 @@
     const duration = getEventDuration(event)
     const hours = Math.floor(duration / 60)
     const minutes = duration % 60
-    
+
     if (hours > 0 && minutes > 0) {
       return `${hours}h ${minutes}m`
     } else if (hours > 0) {
@@ -293,7 +230,9 @@
   }
 
   .agenda-event {
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
     cursor: pointer;
   }
 

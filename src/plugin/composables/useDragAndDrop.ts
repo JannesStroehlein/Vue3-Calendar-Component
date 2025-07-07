@@ -1,10 +1,8 @@
 import { ref, computed } from 'vue'
 import type { Dayjs } from 'dayjs'
-import type { CalendarEventInternal, EventDropData, EventDropHandler } from '@/types'
-import { useCalendarStore } from '@/stores'
+import type { CalendarEventInternal, EventDropData, EventDropHandler } from '@/plugin/types'
 
 export function useDragAndDrop(onEventDrop?: EventDropHandler) {
-  const store = useCalendarStore()
   const draggedEvent = ref<CalendarEventInternal | null>(null)
   const draggedElement = ref<HTMLElement | null>(null)
   const isDragging = ref(false)
@@ -14,7 +12,7 @@ export function useDragAndDrop(onEventDrop?: EventDropHandler) {
     draggedEvent.value = event
     draggedElement.value = element
     isDragging.value = true
-    
+
     // Add visual feedback
     element.style.opacity = '0.5'
     element.style.cursor = 'grabbing'
@@ -25,7 +23,7 @@ export function useDragAndDrop(onEventDrop?: EventDropHandler) {
       draggedElement.value.style.opacity = '1'
       draggedElement.value.style.cursor = 'grab'
     }
-    
+
     draggedEvent.value = null
     draggedElement.value = null
     isDragging.value = false
@@ -41,22 +39,16 @@ export function useDragAndDrop(onEventDrop?: EventDropHandler) {
     const calculatedNewEnd = newEnd || newStart.add(oldEnd.diff(oldStart, 'minute'), 'minute')
 
     const dropData: EventDropData = {
-      event,
-      newStart,
-      newEnd: calculatedNewEnd,
-      oldStart,
-      oldEnd
+      event: event,
+      newStart: newStart.toDate(),
+      newEnd: calculatedNewEnd.toDate(),
+      oldStart: oldStart.toDate(),
+      oldEnd: oldEnd.toDate(),
     }
 
     try {
       if (onEventDrop) {
         await onEventDrop(dropData)
-      } else {
-        // Default behavior: update the event in the store
-        store.updateEvent(event.id, {
-          start: newStart.toISOString(),
-          end: calculatedNewEnd.toISOString()
-        })
       }
     } catch (error) {
       console.error('Failed to drop event:', error)
@@ -84,6 +76,6 @@ export function useDragAndDrop(onEventDrop?: EventDropHandler) {
     handleDragEnd,
     handleDrop,
     handleDragOver,
-    handleDragLeave
+    handleDragLeave,
   }
 }
