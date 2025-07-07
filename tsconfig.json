@@ -25,7 +25,22 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@types/*": [
+        "./src/plugin/types/*"
+      ],
+      "@components/*": [
+        "./src/plugin/components/*"
+      ],
+      "@composables/*": [
+        "./src/plugin/composables/*"
+      ],
+      "@stores/*": [
+        "./src/plugin/stores/*"
+      ],
+      "@utils/*": [
+        "./src/plugin/utils/*"
+      ],
     },
 
     /* Declaration files */
