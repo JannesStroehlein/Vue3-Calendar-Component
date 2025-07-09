@@ -7,6 +7,7 @@ import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import './style.css'
 
+import { locale } from '@/plugin/locale/en'
 import Vue3CalendarComponent from '../plugin/index'
 import App from './App.vue'
 
@@ -32,13 +33,8 @@ app.use(Vue3CalendarComponent, {
     showWeekNumbers: false,
     showTimeGrid: true,
     timeGridDivisions: 4,
-    startOfWeekFormat: 'MMM D',
-    endOfWeekFormat: 'MMM D, YYYY',
-    dayFormat: 'dddd, MMMM D, YYYY',
-    dateFormat: 'YYYY-MM-DD',
-    timeFormat: 'HH:mm',
-    monthFormat: 'MMMM YYYY',
   },
+  locale: locale,
 })
 
 app.mount('#app')
