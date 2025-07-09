@@ -1,13 +1,10 @@
 <template>
   <v-card class="calendar-filters pa-4 mb-4">
     <v-row>
-      <v-col
-        cols="12"
-        md="4"
-      >
+      <v-col cols="12" md="4">
         <v-text-field
           v-model="searchText"
-          label="Search events"
+          :label="locale?.current.value.toolbar.searchPlaceholder ?? 'Search events...'"
           prepend-inner-icon="mdi-magnify"
           variant="outlined"
           density="compact"
@@ -16,14 +13,11 @@
         />
       </v-col>
 
-      <v-col
-        cols="12"
-        md="4"
-      >
+      <v-col cols="12" md="4">
         <v-select
           v-model="selectedStatuses"
           :items="statusOptions"
-          label="Filter by status"
+          :label="locale?.current.value.toolbar.filters.statusLabel ?? 'Filter by status'"
           multiple
           variant="outlined"
           density="compact"
@@ -31,39 +25,27 @@
           closable-chips
           @update:model-value="handleStatusChange"
         >
-          <template #chip="{ props, item }">
-            <v-chip
-              v-bind="props"
-              :color="getStatusColor(item.value)"
-              size="small"
-            >
+          <template #chip="{ props: templateProps, item }">
+            <v-chip v-bind="templateProps" :color="getStatusColor(item.value)" size="small">
               {{ item.title }}
             </v-chip>
           </template>
         </v-select>
       </v-col>
 
-      <v-col
-        cols="12"
-        md="4"
-      >
+      <v-col cols="12" md="4">
         <div class="d-flex align-center">
-          <v-btn
-            variant="outlined"
-            size="small"
-            @click="clearFilters"
-          >
-            Clear Filters
+          <v-btn variant="outlined" size="small" @click="clearFilters">
+            {{ locale?.current.value.toolbar.clearFilters ?? 'Clear Filters' }}
           </v-btn>
-          
+
           <v-spacer />
-          
-          <v-chip
-            v-if="activeFilterCount > 0"
-            color="primary"
-            size="small"
-          >
-            {{ activeFilterCount }} filter{{ activeFilterCount > 1 ? 's' : '' }}
+
+          <v-chip v-if="activeFilterCount > 0" color="primary" size="small">
+            <span v-if="locale.current.value.toolbar.activeFilters">
+              {{ locale.current.value.toolbar.activeFilters(activeFilterCount) }}
+            </span>
+            <span v-else> {{ activeFilterCount }} filter{{ activeFilterCount > 1 ? 's' : '' }} </span>
           </v-chip>
         </div>
       </v-col>
@@ -72,17 +54,27 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
-  import type { FilterOptions, EventStatus } from '@/types'
-  import { debounce } from '@/utils'
+  import type { CalendarFiltersEmits, CalendarFiltersProps, EventStatus, FilterOptions } from '@/plugin/types'
+  import { debounce } from '@/plugin/utils'
+  import { computed, ref, watch } from 'vue'
+  import { VBtn, VCard, VChip, VCol, VRow, VSelect, VSpacer, VTextField } from 'vuetify/components'
+  import { useLocale } from '../composables/useLocale'
 
-  export interface CalendarFiltersProps {
-    filters: FilterOptions
-  }
+  // Component registration for library usage
+  defineOptions({
+    components: {
+      VCard,
+      VRow,
+      VCol,
+      VTextField,
+      VSelect,
+      VChip,
+      VBtn,
+      VSpacer,
+    },
+  })
 
-  export interface CalendarFiltersEmits {
-    (e: 'filters-change', filters: FilterOptions): void
-  }
+  const locale = useLocale()
 
   const props = defineProps<CalendarFiltersProps>()
   const emit = defineEmits<CalendarFiltersEmits>()
@@ -90,12 +82,12 @@
   const searchText = ref(props.filters.search || '')
   const selectedStatuses = ref<EventStatus[]>(props.filters.statuses || [])
 
-  const statusOptions = [
-    { title: 'Open', value: 'open' as EventStatus },
-    { title: 'Planned', value: 'planned' as EventStatus },
-    { title: 'Completed', value: 'completed' as EventStatus },
-    { title: 'Overdue', value: 'overdue' as EventStatus },
-    { title: 'Cancelled', value: 'cancelled' as EventStatus },
+  const statusOptions: { title?: string; value: EventStatus }[] = [
+    { title: locale.current.value.status.open, value: 'open' as EventStatus },
+    { title: locale.current.value.status.planned, value: 'planned' as EventStatus },
+    { title: locale.current.value.status.completed, value: 'completed' as EventStatus },
+    { title: locale.current.value.status.overdue, value: 'overdue' as EventStatus },
+    { title: locale.current.value.status.cancelled, value: 'cancelled' as EventStatus },
   ]
 
   const activeFilterCount = computed(() => {
@@ -123,16 +115,16 @@
 
   const debouncedEmitFilters = debounce(() => {
     const filters: FilterOptions = {}
-    
+
     if (searchText.value) {
       filters.search = searchText.value
     }
-    
+
     if (selectedStatuses.value.length > 0) {
       filters.statuses = selectedStatuses.value
     }
 
-    emit('filters-change', filters)
+    emit('filters-change', { filters })
   }, 300)
 
   const handleSearchChange = () => {
@@ -146,7 +138,7 @@
   const clearFilters = () => {
     searchText.value = ''
     selectedStatuses.value = []
-    emit('filters-change', {})
+    emit('filters-change', { filters: {} })
   }
 
   // Watch for external filter changes

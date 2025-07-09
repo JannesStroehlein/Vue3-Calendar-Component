@@ -1,37 +1,24 @@
-import type { App } from 'vue'
-import CalendarComponent from './components/CalendarComponent.vue'
-import type { CalendarConfig } from './types'
+// Main plugin export
+export { default } from './plugin'
 
-export interface Vue3CalendarComponentOptions {
-  globalConfig?: Partial<CalendarConfig>
-  componentName?: string
-}
+// Export types
+export * from './plugin/types'
 
-export default {
-  install(app: App, options: Vue3CalendarComponentOptions = {}) {
-    const componentName = options.componentName || 'CalendarComponent'
-    
-    // Register the main component
-    app.component(componentName, CalendarComponent)
-
-    // Provide global config if specified
-    if (options.globalConfig) {
-      app.provide('calendarGlobalConfig', options.globalConfig)
-    }
-  }
-}
-
-// Export components for manual registration
-export { CalendarComponent }
-
-// Export all types
-export type * from './types'
-
-// Export utilities
-export * from './utils'
-
-// Export stores
-export * from './stores'
+// Export components individually
+export { default as CalendarComponent } from './plugin/components/CalendarComponent.vue'
+export { default as CalendarToolbarButtons } from './plugin/components/CalendarToolbarButtons.vue'
+export { default as CalendarFilters } from './plugin/components/CalendarFilters.vue'
+export { default as AgendaView } from './plugin/components/views/AgendaView.vue'
+export { default as DayView } from './plugin/components/views/DayView.vue'
+export { default as MonthView } from './plugin/components/views/MonthView.vue'
+export { default as WeekView } from './plugin/components/views/WeekView.vue'
 
 // Export composables
-export * from './composables'
+export * from './plugin/composables'
+
+// Export utilities
+export * from './plugin/utils'
+
+// Export locale files with specific names
+export { locale as localeEn } from './plugin/locale/en'
+export { locale as localeDe } from './plugin/locale/de'

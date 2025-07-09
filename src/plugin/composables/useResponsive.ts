@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
-import type { CalendarView } from '@/types'
+import type { CalendarView } from '@/plugin/types'
 
 export function useResponsive() {
   const { mobile, width, sm, md, lg, xl, xxl } = useDisplay()
@@ -55,6 +55,6 @@ export function useResponsive() {
     recommendedView,
     eventDisplayMode,
     showSidebar,
-    timeSlotHeight
+    timeSlotHeight,
   }
 }

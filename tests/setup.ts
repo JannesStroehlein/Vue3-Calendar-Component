@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
-import { vi } from 'vitest'
 import { config } from '@vue/test-utils'
+import { vi } from 'vitest'
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -19,7 +19,7 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -33,22 +33,22 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock dayjs - use actual dayjs but mock the extend method
 vi.mock('dayjs', async () => {
-  const actual = await vi.importActual('dayjs') as any
+  const actual = (await vi.importActual('dayjs')) as any
   const actualDayjs = actual.default
-  
+
   // Create a wrapper that preserves all dayjs functionality
   const mockDayjs = (...args: any[]) => actualDayjs(...args)
-  
+
   // Copy all static methods and properties from actual dayjs
   Object.setPrototypeOf(mockDayjs, actualDayjs)
   Object.assign(mockDayjs, actualDayjs)
-  
+
   // Mock the extend method to prevent plugin loading issues in tests
   mockDayjs.extend = vi.fn()
-  
+
   return {
     default: mockDayjs,
-    ...actual
+    ...actual,
   }
 })
 
@@ -67,7 +67,7 @@ config.global.stubs = {
   VCardText: true,
   VCardActions: true,
   VDialog: true,
-  VChip: true
+  VChip: true,
 }
 
 // Mock CSS imports
@@ -83,13 +83,17 @@ vi.mock('vuetify/components', () => ({
   VCardText: { name: 'VCardText', template: '<div class="v-card-text-mock"><slot /></div>' },
   VCardActions: { name: 'VCardActions', template: '<div class="v-card-actions-mock"><slot /></div>' },
   VDialog: { name: 'VDialog', template: '<div class="v-dialog-mock"><slot /></div>' },
-  VChip: { name: 'VChip', template: '<div class="v-chip-mock"><slot /></div>' }
+  VChip: { name: 'VChip', template: '<div class="v-chip-mock"><slot /></div>' },
+  VToolbar: { name: 'VToolbar', template: '<div class="v-toolbar-mock"><slot /></div>' },
+  VSpacer: { name: 'VSpacer', template: '<div class="v-spacer-mock"><slot /></div>' },
+  VBtnToggle: { name: 'VBtnToggle', template: '<div class="v-btn-toggle-mock"><slot /></div>' },
+  VProgressLinear: { name: 'VProgressLinear', template: '<div class="v-progress-linear-mock"><slot /></div>' },
 }))
 
 vi.mock('vuetify/components/VIcon', () => ({
-  VIcon: { name: 'VIcon', template: '<div class="v-icon-mock"><slot /></div>' }
+  VIcon: { name: 'VIcon', template: '<div class="v-icon-mock"><slot /></div>' },
 }))
 
 vi.mock('vuetify/components/VBtn', () => ({
-  VBtn: { name: 'VBtn', template: '<button class="v-btn-mock"><slot /></button>' }
+  VBtn: { name: 'VBtn', template: '<button class="v-btn-mock"><slot /></button>' },
 }))

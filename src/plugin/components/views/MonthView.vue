@@ -1,21 +1,13 @@
 <template>
   <div class="month-view">
     <div class="month-header">
-      <div
-        v-for="day in weekDayNames"
-        :key="day"
-        class="month-header-day"
-      >
+      <div v-for="day in weekDayNames" :key="day" class="month-header-day">
         {{ day }}
       </div>
     </div>
 
     <div class="month-grid">
-      <div
-        v-for="(week, weekIndex) in monthWeeks"
-        :key="weekIndex"
-        class="month-week"
-      >
+      <div v-for="(week, weekIndex) in monthWeeks" :key="weekIndex" class="month-week">
         <div
           v-for="day in week"
           :key="day.format('YYYY-MM-DD')"
@@ -23,11 +15,12 @@
           :class="{
             'current-month': day.month() === currentDate.month(),
             'other-month': day.month() !== currentDate.month(),
-            'today': isToday(day),
-            'weekend': isWeekend(day)
+            today: isToday(day),
+            weekend: isWeekend(day),
           }"
-          @click="handleDateClick(day)"
+          @click="handleDateClick({ date: day, nativeEvent: $event })"
           @dragover.prevent="handleDragOver"
+          @dragleave="handleDragLeave"
           @drop="handleDrop(day)"
         >
           <div class="day-number">
@@ -41,21 +34,16 @@
               class="month-event"
               :style="{
                 backgroundColor: getEventColor(event),
-                color: getEventTextColor(event)
+                color: getEventTextColor(event),
               }"
               :class="{
-                'event-completed': event.status === 'completed'
+                'event-completed': event.status === 'completed',
               }"
               draggable="true"
               @click.stop="handleEventClick({ event, nativeEvent: $event })"
               @dragstart="handleDragStart(event, $event.target)"
             >
-              <v-icon
-                v-if="event.icon"
-                :icon="event.icon"
-                size="x-small"
-                class="mr-1"
-              />
+              <v-icon v-if="event.icon" :icon="event.icon" size="x-small" class="mr-1" />
               <span class="event-title">{{ event.title }}</span>
             </div>
           </div>
@@ -66,59 +54,59 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import type { Dayjs } from 'dayjs'
-  import { VIcon } from 'vuetify/components/VIcon'
+  import { useDragAndDrop, useTimeConverter } from '@/plugin/composables'
+  import { useLocale } from '@/plugin/composables/useLocale'
   import type {
     CalendarEventInternal,
-    CalendarConfig,
-    EventClickHandler,
     DateClickHandler,
-    EventClickData
-  } from '@/types'
+    EventClickHandler,
+    EventDropData,
+    MonthViewEmits,
+    MonthViewProps,
+  } from '@/plugin/types'
   import {
-    getMonthWeeks,
-    getEventsForDay as utilGetEventsForDay,
     getEventColor,
     getEventTextColor,
+    getMonthWeeks,
     isToday,
-    isWeekend
-  } from '@/utils'
-  import { useDragAndDrop } from '@/composables'
+    isWeekend,
+    getEventsForDay as utilGetEventsForDay,
+    weekdayToNumber,
+  } from '@/plugin/utils'
+  import type { Dayjs } from 'dayjs'
+  import { computed } from 'vue'
+  import { VIcon } from 'vuetify/components/VIcon'
 
-  // Component registration for library usage
-  defineOptions({
-    components: {
-      VIcon
-    }
-  })
-
-  export interface MonthViewProps {
-    events: CalendarEventInternal[]
-    currentDate: Dayjs
-    config: CalendarConfig
-  }
-
-  export interface MonthViewEmits {
-    (e: 'event-click', data: EventClickData): void
-    (e: 'event-drop', event: CalendarEventInternal, newDate: Dayjs): void
-    (e: 'date-click', date: Dayjs): void
-  }
+  const minTimeRef = computed(() => props.config.minTime || '00:00')
+  const minTime = useTimeConverter(minTimeRef)
 
   const props = defineProps<MonthViewProps>()
   const emit = defineEmits<MonthViewEmits>()
 
-  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(
-    async (data) => {
-      emit('event-drop', data.event, data.newStart)
-    }
-  )
+  const { createLocalizedDayjs } = useLocale()
+
+  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data: any) => {
+    emit('event-drop', {
+      event: data.event,
+      date: data.date,
+      newEnd: data.newEnd,
+      newStart: data.newStart,
+      oldEnd: data.oldEnd,
+      oldStart: data.oldStart,
+    } as EventDropData)
+  })
 
   const weekDayNames = computed(() => {
-    const firstDay = props.currentDate.startOf('week').add(props.config.firstDayOfWeek! - 1, 'day')
+    const localizedCurrentDate = createLocalizedDayjs(props.currentDate)
+
+    // Start of the week based on the configured first day
+    const firstDay = localizedCurrentDate
+      // dayjs uses 0-6 for Sunday-Saturday and this is locale independent
+      .add(localizedCurrentDate.get('day'), 'day')
+      .add(weekdayToNumber(props.config.firstDayOfWeek!) + 1, 'day')
     const days: string[] = []
     for (let i = 0; i < 7; i++) {
-      days.push(firstDay.add(i, 'day').format('ddd'))
+      days.push(createLocalizedDayjs(firstDay.add(i, 'day')).format('ddd'))
     }
     return days
   })
@@ -141,16 +129,35 @@
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
     if (target instanceof HTMLElement) {
+      target.style.opacity = '0.5'
+      target.style.transform = 'rotate(3deg)'
       dragStart(event, target)
     }
   }
 
   const handleDrop = (date: Dayjs) => {
-    drop(date.startOf('day'))
+    // Clear all drag highlights
+    document.querySelectorAll('.drag-highlight').forEach((el) => {
+      el.classList.remove('drag-highlight')
+    })
+    // Reset dragged element styling
+    document.querySelectorAll('[style*="opacity: 0.5"]').forEach((el) => {
+      const element = el as HTMLElement
+      element.style.opacity = ''
+      element.style.transform = ''
+    })
+    drop(date.startOf('day').add(minTime.value, 'minute'))
   }
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight')
+  }
+
+  const handleDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight')
   }
 </script>
 
@@ -261,5 +268,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+  }
+
+  /* Drag and Drop Highlighting Styles */
+  .drag-highlight {
+    background-color: rgba(25, 118, 210, 0.1) !important;
+    border: 2px dashed rgba(25, 118, 210, 0.5) !important;
+  }
+
+  .month-event[draggable='true']:hover {
+    transform: scale(1.02);
+    transition: transform 0.1s ease;
   }
 </style>

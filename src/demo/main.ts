@@ -1,37 +1,37 @@
+import '@mdi/font/css/materialdesignicons.css'
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css'
 import './style.css'
 
-import Vue3CalendarComponent from '../index'
+import { locale } from '@/plugin/locale/en'
+import Vue3CalendarComponent from '../plugin/index'
 import App from './App.vue'
 
-const pinia = createPinia()
 const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'light'
-  }
+    defaultTheme: 'light',
+  },
 })
 
 const app = createApp(App)
 
-app.use(pinia)
 app.use(vuetify)
 app.use(Vue3CalendarComponent, {
-  globalConfig: {
-    firstDayOfWeek: 1,
+  calendarConfig: {
+    firstDayOfWeek: 'monday',
+    minTime: '00:00',
+    maxTime: '24:00',
     timeSlotDuration: 60,
-    minTime: '08:00',
-    maxTime: '18:00',
+    showWeekNumbers: false,
     showTimeGrid: true,
-    locale: 'en'
-  }
+    timeGridDivisions: 4,
+  },
+  locale: locale,
 })
 
 app.mount('#app')

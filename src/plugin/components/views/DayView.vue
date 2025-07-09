@@ -4,30 +4,27 @@
       class="day-header"
       :class="{
         'show-time-grid': config.showTimeGrid,
-        'hide-time-grid': !config.showTimeGrid
+        'hide-time-grid': !config.showTimeGrid,
       }"
     >
-      <div
-        v-if="config.showTimeGrid"
-        class="time-column-header"
-      />
+      <div v-if="config.showTimeGrid" class="time-column-header" />
       <div
         class="day-header-content"
         :class="{
-          'today': isToday(currentDate),
-          'weekend': isWeekend(currentDate)
+          today: isToday(currentDate),
+          weekend: isWeekend(currentDate),
         }"
-        @click="handleDateClick(currentDate)"
+        @click="handleDateClick({ date: currentDate, nativeEvent: $event })"
       >
         <div class="day-name">
           {{ currentDate.format('dddd') }}
         </div>
-        <div class="day-number">
+        <!--         <div class="day-number">
           {{ currentDate.format('D') }}
         </div>
         <div class="day-month">
           {{ currentDate.format('MMMM YYYY') }}
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -35,31 +32,32 @@
       class="day-body"
       :class="{
         'show-time-grid': config.showTimeGrid,
-        'hide-time-grid': !config.showTimeGrid
+        'hide-time-grid': !config.showTimeGrid,
       }"
+      @drop="handleDrop(currentDate.startOf('day'))"
     >
-      <div
-        v-if="config.showTimeGrid"
-        class="time-column"
-      >
+      <div v-if="config.showTimeGrid" class="time-column">
         <div
           v-for="slot in timeSlots"
           :key="`${slot.hour}-${slot.minute}`"
           class="time-slot"
-          :style="{ height: `${timeSlotHeight}px` }"
+          :style="{ height: `${dynamicTimeSlots.height}px` }"
         >
           <span class="time-label">{{ slot.label }}</span>
         </div>
       </div>
 
-      <div class="day-content">
+      <div class="day-content" @dragover.prevent="handleDragOver" @dragleave="handleDragLeave">
         <div
           v-for="slot in timeSlots"
           :key="`${currentDate.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
           class="time-slot"
-          :style="{ height: `${timeSlotHeight}px` }"
+          :style="{ height: `${dynamicTimeSlots.height}px` }"
           :class="{ 'time-grid': config.showTimeGrid }"
           @click="handleTimeSlotClick(slot)"
+          @drop="handleDrop(currentDate.startOf('day').add(slot.hour, 'hour').add(slot.minute, 'minute'))"
+          @dragover.prevent="handleTimeSlotDragOver"
+          @dragleave="handleTimeSlotDragLeave"
         />
 
         <div
@@ -67,54 +65,35 @@
           :key="event.id"
           class="day-event"
           :style="getEventStyle(event)"
-
           :class="{
-            'event-completed': event.status === 'completed'
+            'event-completed': event.status === 'completed',
           }"
           draggable
-          @click.stop="handleEventClick({ event, nativeEvent: $event})"
+          @click.stop="handleEventClick({ event, nativeEvent: $event })"
           @dragstart="handleDragStart(event, $event.target)"
         >
           <div class="event-content">
             <div class="event-header">
-              <v-icon
-                v-if="event.icon"
-                :icon="event.icon"
-                size="small"
-                class="mr-2"
-              />
+              <v-icon v-if="event.icon" :icon="event.icon" size="small" class="mr-2" />
               <div class="event-title">
                 {{ event.title }}
               </div>
             </div>
-            
-            <div
-              v-if="event.subtitle"
-              class="event-subtitle"
-            >
+
+            <div v-if="event.subtitle" class="event-subtitle">
               {{ event.subtitle }}
             </div>
-            
+
             <div class="event-time">
               {{ formatEventTime(event) }}
             </div>
-            
-            <div
-              v-if="event.location"
-              class="event-location"
-            >
-              <v-icon
-                icon="mdi-map-marker"
-                size="x-small"
-                class="mr-1"
-              />
+
+            <div v-if="event.location" class="event-location">
+              <v-icon icon="mdi-map-marker" size="x-small" class="mr-1" />
               {{ event.location }}
             </div>
-            
-            <div
-              v-if="event.description"
-              class="event-description"
-            >
+
+            <div v-if="event.description" class="event-description">
               {{ event.description }}
             </div>
           </div>
@@ -125,65 +104,55 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, CSSProperties } from 'vue'
-  import type { Dayjs } from 'dayjs'
-  import { VIcon } from 'vuetify/components/VIcon'
+  import { useDragAndDrop, useDynamicTimeSlots } from '@/plugin/composables'
   import type {
     CalendarEventInternal,
-    CalendarConfig,
-    EventClickHandler,
     DateClickHandler,
+    DayViewEmits,
+    DayViewProps,
+    EventClickHandler,
+    EventDropData,
     TimeSlot,
-    EventClickData
-  } from '@/types'
+  } from '@/plugin/types'
   import {
-    getEventsForDay,
+    formatEventTime,
     generateTimeSlots,
     getEventColor,
+    getEventsForDay,
     getEventTextColor,
-    formatEventTime,
     isToday,
-    isWeekend
-  } from '@/utils'
-  import { useDragAndDrop, useResponsive } from '@/composables'
-
-  // Component registration for library usage
-  defineOptions({
-    components: {
-      VIcon
-    }
-  })
-
-  export interface DayViewProps {
-    events: CalendarEventInternal[]
-    currentDate: Dayjs
-    config: CalendarConfig
-  }
-
-  export interface DayViewEmits {
-    (e: 'event-click', data: EventClickData): void
-    (e: 'event-drop', event: CalendarEventInternal, newDate: Dayjs): void
-    (e: 'date-click', date: Dayjs): void
-    (e: 'time-slot-click', date: Dayjs, slot: TimeSlot): void
-  }
+    isWeekend,
+  } from '@/plugin/utils'
+  import { Dayjs } from 'dayjs'
+  import { computed, CSSProperties } from 'vue'
+  import { VIcon } from 'vuetify/components/VIcon'
 
   const props = defineProps<DayViewProps>()
   const emit = defineEmits<DayViewEmits>()
 
-  const { handleDragStart: dragStart } = useDragAndDrop(
-    async (data) => {
-      emit('event-drop', data.event, data.newStart)
-    }
-  )
+  // Computed property to access container height
+  const availableHeight = computed(() => {
+    return props.containerHeight || 500 // Default fallback height
+  })
 
-  const { timeSlotHeight } = useResponsive()
+  const timeSlotDuration = computed(() => props.config.timeSlotDuration ?? 60)
+  const minTime = computed(() => props.config.minTime || '00:00')
+  const maxTime = computed(() => props.config.maxTime || '24:00')
+  const dynamicTimeSlots = useDynamicTimeSlots(availableHeight, minTime, maxTime, timeSlotDuration, 60)
+
+  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data: any) => {
+    emit('event-drop', {
+      event: data.event,
+      date: data.date,
+      newEnd: data.newEnd,
+      newStart: data.newStart,
+      oldEnd: data.oldEnd,
+      oldStart: data.oldStart,
+    } as EventDropData)
+  })
 
   const timeSlots = computed(() => {
-    return generateTimeSlots(
-      props.config.minTime,
-      props.config.maxTime,
-      props.config.timeSlotDuration
-    )
+    return generateTimeSlots(props.config.minTime, props.config.maxTime, props.config.timeSlotDuration)
   })
 
   const dayEvents = computed(() => {
@@ -193,29 +162,29 @@
   const getEventStyle = (event: CalendarEventInternal): CSSProperties => {
     const [minHour, minMinute] = (props.config.minTime || '00:00').split(':').map(Number)
     const [maxHour, maxMinute] = (props.config.maxTime || '24:00').split(':').map(Number)
-    
+
     const gridStart = props.currentDate.hour(minHour).minute(minMinute).second(0)
     const gridEnd = props.currentDate.hour(maxHour).minute(maxMinute).second(0)
-    
+
     // Clamp event times to the visible grid range
     const eventStart = event.startDate.isBefore(gridStart) ? gridStart : event.startDate
     const eventEnd = event.endDate.isAfter(gridEnd) ? gridEnd : event.endDate
-    
+
     // Skip events that are completely outside the visible range
     if (event.endDate.isBefore(gridStart) || event.startDate.isAfter(gridEnd)) {
       return { display: 'none' }
     }
-    
+
     // Calculate minutes from the grid start time
     const startMinutes = eventStart.diff(gridStart, 'minute')
     const duration = eventEnd.diff(eventStart, 'minute')
-    
+
     const slotDuration = props.config.timeSlotDuration || 60
-    const slotHeight = timeSlotHeight.value
-    
+    const slotHeight = dynamicTimeSlots.value.height
+
     const top = Math.max(0, (startMinutes / slotDuration) * slotHeight)
     const height = Math.max((duration / slotDuration) * slotHeight, 20)
-    
+
     return {
       position: 'absolute',
       top: `${top}px`,
@@ -224,7 +193,7 @@
       right: '8px',
       backgroundColor: getEventColor(event),
       color: getEventTextColor(event),
-      zIndex: 10
+      zIndex: 10,
     }
   }
 
@@ -238,15 +207,52 @@
 
   const handleTimeSlotClick = (slot: TimeSlot) => {
     const slotDate = props.currentDate.hour(slot.hour).minute(slot.minute)
-    emit('time-slot-click', slotDate, slot)
+    emit('time-slot-click', { date: slotDate, slot: slot })
   }
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
     if (target instanceof HTMLElement) {
+      target.style.opacity = '0.5'
+      target.style.transform = 'rotate(3deg)'
       dragStart(event, target)
     }
   }
 
+  const handleDrop = (date: Dayjs) => {
+    // Clear all drag highlights
+    document.querySelectorAll('.drag-highlight').forEach((el) => {
+      el.classList.remove('drag-highlight')
+    })
+    // Reset dragged element styling
+    document.querySelectorAll('[style*="opacity: 0.5"]').forEach((el) => {
+      const element = el as HTMLElement
+      element.style.opacity = ''
+      element.style.transform = ''
+    })
+    drop(date)
+  }
+
+  const handleDragOver = (event: DragEvent) => {
+    event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight')
+  }
+
+  const handleDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight')
+  }
+
+  const handleTimeSlotDragOver = (event: DragEvent) => {
+    event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight-slot')
+  }
+
+  const handleTimeSlotDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight-slot')
+  }
 </script>
 
 <style scoped>
@@ -260,6 +266,7 @@
   .show-time-grid {
     grid-template-columns: 60px 1fr;
   }
+
   .hide-time-grid {
     grid-template-columns: 1fr;
   }
@@ -317,7 +324,7 @@
   .day-body {
     flex: 1;
     display: grid;
-    overflow-y: auto;
+    overflow-y: hidden;
     min-height: 0;
   }
 
@@ -376,7 +383,9 @@
     font-size: 0.875rem;
     cursor: pointer;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: opacity 0.2s, transform 0.1s;
+    transition:
+      opacity 0.2s,
+      transform 0.1s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
@@ -438,5 +447,21 @@
     -webkit-line-clamp: 3;
     line-clamp: 3;
     -webkit-box-orient: vertical;
+  }
+
+  /* Drag and Drop Highlighting Styles */
+  .drag-highlight {
+    background-color: rgba(25, 118, 210, 0.1) !important;
+    border: 2px dashed rgba(25, 118, 210, 0.5) !important;
+  }
+
+  .drag-highlight-slot {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    border: 1px solid rgba(25, 118, 210, 0.3) !important;
+  }
+
+  .day-event[draggable='true']:hover {
+    transform: scale(1.02);
+    transition: transform 0.1s ease;
   }
 </style>
