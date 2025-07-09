@@ -183,8 +183,8 @@
   const calendarConfig = ref<CalendarConfig>({
     firstDayOfWeek: 'monday',
     timeSlotDuration: 60,
-    minTime: '08:00',
-    maxTime: '18:00',
+    minTime: '00:00',
+    maxTime: '24:00',
     showTimeGrid: true,
   })
 

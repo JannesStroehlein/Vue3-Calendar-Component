@@ -20,6 +20,7 @@
           }"
           @click="handleDateClick({ date: day, nativeEvent: $event })"
           @dragover.prevent="handleDragOver"
+          @dragleave="handleDragLeave"
           @drop="handleDrop(day)"
         >
           <div class="day-number">
@@ -53,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useDragAndDrop } from '@/plugin/composables'
+  import { useDragAndDrop, useTimeConverter } from '@/plugin/composables'
   import { useLocale } from '@/plugin/composables/useLocale'
   import type {
     CalendarEventInternal,
@@ -76,10 +77,8 @@
   import { computed } from 'vue'
   import { VIcon } from 'vuetify/components/VIcon'
 
-  // Component registration for library usage
-  defineOptions({
-    name: 'MonthView',
-  })
+  const minTimeRef = computed(() => props.config.minTime || '00:00')
+  const minTime = useTimeConverter(minTimeRef)
 
   const props = defineProps<MonthViewProps>()
   const emit = defineEmits<MonthViewEmits>()
@@ -99,12 +98,16 @@
 
   const weekDayNames = computed(() => {
     const localizedCurrentDate = createLocalizedDayjs(props.currentDate)
-    const firstDay = localizedCurrentDate.startOf('week').add(weekdayToNumber(props.config.firstDayOfWeek!), 'day')
+
+    // Start of the week based on the configured first day
+    const firstDay = localizedCurrentDate
+      // dayjs uses 0-6 for Sunday-Saturday and this is locale independent
+      .add(localizedCurrentDate.get('day'), 'day')
+      .add(weekdayToNumber(props.config.firstDayOfWeek!) + 1, 'day')
     const days: string[] = []
     for (let i = 0; i < 7; i++) {
       days.push(createLocalizedDayjs(firstDay.add(i, 'day')).format('ddd'))
     }
-    console.log(days)
     return days
   })
 
@@ -126,16 +129,35 @@
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
     if (target instanceof HTMLElement) {
+      target.style.opacity = '0.5'
+      target.style.transform = 'rotate(3deg)'
       dragStart(event, target)
     }
   }
 
   const handleDrop = (date: Dayjs) => {
-    drop(date.startOf('day'))
+    // Clear all drag highlights
+    document.querySelectorAll('.drag-highlight').forEach((el) => {
+      el.classList.remove('drag-highlight')
+    })
+    // Reset dragged element styling
+    document.querySelectorAll('[style*="opacity: 0.5"]').forEach((el) => {
+      const element = el as HTMLElement
+      element.style.opacity = ''
+      element.style.transform = ''
+    })
+    drop(date.startOf('day').add(minTime.value, 'minute'))
   }
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight')
+  }
+
+  const handleDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight')
   }
 </script>
 
@@ -246,5 +268,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+  }
+
+  /* Drag and Drop Highlighting Styles */
+  .drag-highlight {
+    background-color: rgba(25, 118, 210, 0.1) !important;
+    border: 2px dashed rgba(25, 118, 210, 0.5) !important;
+  }
+
+  .month-event[draggable='true']:hover {
+    transform: scale(1.02);
+    transition: transform 0.1s ease;
   }
 </style>

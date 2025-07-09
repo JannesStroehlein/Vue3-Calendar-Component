@@ -71,7 +71,7 @@ export function generateTimeSlots(
 }
 
 export function getWeekDays(date: Dayjs, firstDayOfWeek: WeekDay = 'monday'): Dayjs[] {
-  const startOfWeek = date.startOf('week').add(weekdayToNumber(firstDayOfWeek), 'day')
+  const startOfWeek = date.add(-date.get('day'), 'd').add(weekdayToNumber(firstDayOfWeek), 'day')
   const days: Dayjs[] = []
   for (let i = 0; i < 7; i++) {
     days.push(startOfWeek.add(i, 'day'))

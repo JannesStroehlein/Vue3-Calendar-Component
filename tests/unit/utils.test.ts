@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import dayjs from 'dayjs'
+import type { CalendarEvent, CalendarEventInternal } from '@/plugin/types'
 import {
-  normalizeEvent,
-  getEventsInRange,
   formatEventTime,
   getEventColor,
+  getEventsInRange,
   isToday,
-  isWeekend
-} from '@/utils/date'
-import type { CalendarEvent, CalendarEventInternal } from '@/types'
+  isWeekend,
+  normalizeEvent,
+} from '@/plugin/utils/date'
+import dayjs from 'dayjs'
+import { describe, expect, it } from 'vitest'
 
 describe('Date Utils', () => {
   describe('normalizeEvent', () => {
@@ -17,11 +17,11 @@ describe('Date Utils', () => {
         id: '1',
         title: 'Test Event',
         start: '2025-07-01T10:00:00',
-        end: '2025-07-01T11:00:00'
+        end: '2025-07-01T11:00:00',
       }
 
       const normalized = normalizeEvent(event)
-      
+
       expect(normalized.startDate.isValid()).toBe(true)
       expect(normalized.endDate.isValid()).toBe(true)
       expect(normalized.isAllDay).toBe(false)
@@ -32,11 +32,11 @@ describe('Date Utils', () => {
         id: '1',
         title: 'All Day Event',
         start: '2025-07-01',
-        allDay: true
+        allDay: true,
       }
 
       const normalized = normalizeEvent(event)
-      
+
       expect(normalized.isAllDay).toBe(true)
     })
 
@@ -44,11 +44,11 @@ describe('Date Utils', () => {
       const event: CalendarEvent = {
         id: '1',
         title: 'No End Event',
-        start: '2025-07-01T10:00:00'
+        start: '2025-07-01T10:00:00',
       }
 
       const normalized = normalizeEvent(event)
-      
+
       expect(normalized.endDate.diff(normalized.startDate, 'hour')).toBe(1)
     })
   })
@@ -62,7 +62,7 @@ describe('Date Utils', () => {
           start: '2025-07-01T10:00:00',
           startDate: dayjs('2025-07-01T10:00:00'),
           endDate: dayjs('2025-07-01T11:00:00'),
-          isAllDay: false
+          isAllDay: false,
         },
         {
           id: '2',
@@ -70,15 +70,15 @@ describe('Date Utils', () => {
           start: '2025-07-05T10:00:00',
           startDate: dayjs('2025-07-05T10:00:00'),
           endDate: dayjs('2025-07-05T11:00:00'),
-          isAllDay: false
-        }
+          isAllDay: false,
+        },
       ]
 
       const start = dayjs('2025-07-01')
       const end = dayjs('2025-07-03')
-      
+
       const filtered = getEventsInRange(events, start, end)
-      
+
       expect(filtered).toHaveLength(1)
       expect(filtered[0].id).toBe('1')
     })
@@ -92,11 +92,11 @@ describe('Date Utils', () => {
         start: '2025-07-01T10:00:00',
         startDate: dayjs('2025-07-01T10:00:00'),
         endDate: dayjs('2025-07-01T11:00:00'),
-        isAllDay: false
+        isAllDay: false,
       }
 
       const formatted = formatEventTime(event)
-      
+
       expect(formatted).toBe('10:00 - 11:00')
     })
 
@@ -107,11 +107,11 @@ describe('Date Utils', () => {
         start: '2025-07-01',
         startDate: dayjs('2025-07-01'),
         endDate: dayjs('2025-07-01').endOf('day'),
-        isAllDay: true
+        isAllDay: true,
       }
 
       const formatted = formatEventTime(event)
-      
+
       expect(formatted).toBe('All day')
     })
   })
@@ -125,11 +125,11 @@ describe('Date Utils', () => {
         startDate: dayjs('2025-07-01T10:00:00'),
         endDate: dayjs('2025-07-01T11:00:00'),
         isAllDay: false,
-        color: '#ff0000'
+        color: '#ff0000',
       }
 
       const color = getEventColor(event)
-      
+
       expect(color).toBe('#ff0000')
     })
 
@@ -141,11 +141,11 @@ describe('Date Utils', () => {
         startDate: dayjs('2025-07-01T10:00:00'),
         endDate: dayjs('2025-07-01T11:00:00'),
         isAllDay: false,
-        status: 'completed'
+        status: 'completed',
       }
 
       const color = getEventColor(event)
-      
+
       expect(color).toBe('#4caf50')
     })
   })

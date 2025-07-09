@@ -84,6 +84,10 @@ vi.mock('vuetify/components', () => ({
   VCardActions: { name: 'VCardActions', template: '<div class="v-card-actions-mock"><slot /></div>' },
   VDialog: { name: 'VDialog', template: '<div class="v-dialog-mock"><slot /></div>' },
   VChip: { name: 'VChip', template: '<div class="v-chip-mock"><slot /></div>' },
+  VToolbar: { name: 'VToolbar', template: '<div class="v-toolbar-mock"><slot /></div>' },
+  VSpacer: { name: 'VSpacer', template: '<div class="v-spacer-mock"><slot /></div>' },
+  VBtnToggle: { name: 'VBtnToggle', template: '<div class="v-btn-toggle-mock"><slot /></div>' },
+  VProgressLinear: { name: 'VProgressLinear', template: '<div class="v-progress-linear-mock"><slot /></div>' },
 }))
 
 vi.mock('vuetify/components/VIcon', () => ({

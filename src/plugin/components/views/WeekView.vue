@@ -8,6 +8,7 @@
       }"
     >
       <div v-if="config.showTimeGrid" class="time-column-header" />
+      <!-- Week Day column header -->
       <div
         v-for="day in weekDays"
         :key="day.format('YYYY-MM-DD')"
@@ -19,10 +20,10 @@
         @click="handleDateClick({ date: day, nativeEvent: $event })"
       >
         <div class="day-name">
-          {{ day.format('ddd') }}
+          {{ createLocalizedDayjs(day).format('ddd') }}
         </div>
         <div class="day-number">
-          {{ day.format('D') }}
+          {{ createLocalizedDayjs(day).format('D') }}
         </div>
       </div>
     </div>
@@ -39,7 +40,7 @@
           v-for="slot in timeSlots"
           :key="`${slot.hour}-${slot.minute}`"
           class="time-slot"
-          :style="{ height: `${timeSlotHeight}px`, width: config.showTimeGrid ? '100%' : '1px' }"
+          :style="{ height: `${dynamicTimeSlots.height}px`, width: config.showTimeGrid ? '100%' : '1px' }"
         >
           <span v-if="config.showTimeGrid" class="time-label">{{ slot.label }}</span>
         </div>
@@ -56,14 +57,17 @@
           }"
           @click="handleDateClick({ date: day, nativeEvent: $event })"
           @dragover.prevent="handleDragOver"
-          @drop="handleDrop(day)"
+          @dragleave="handleDragLeave"
         >
           <div
             v-for="slot in timeSlots"
             :key="`${day.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
             class="time-slot"
-            :style="{ height: `${timeSlotHeight}px` }"
+            :style="{ height: `${dynamicTimeSlots.height}px` }"
             :class="{ 'time-grid': config.showTimeGrid }"
+            @drop="handleDrop(day.startOf('day').add(slot.hour, 'hour').add(slot.minute, 'minute'))"
+            @dragover.prevent="handleTimeSlotDragOver"
+            @dragleave="handleTimeSlotDragLeave"
           />
 
           <div
@@ -100,8 +104,15 @@
 </template>
 
 <script setup lang="ts">
-  import { useDragAndDrop, useResponsive } from '@/plugin/composables'
-  import type { CalendarEventInternal, DateClickHandler, WeekViewEmits, WeekViewProps } from '@/plugin/types'
+  import { useDragAndDrop, useDynamicTimeSlots } from '@/plugin/composables'
+  import { useLocale } from '@/plugin/composables/useLocale'
+  import type {
+    CalendarEventInternal,
+    DateClickHandler,
+    EventDropData,
+    WeekViewEmits,
+    WeekViewProps,
+  } from '@/plugin/types'
   import {
     formatEventTime,
     generateTimeSlots,
@@ -116,19 +127,21 @@
   import { computed, CSSProperties } from 'vue'
   import { VIcon } from 'vuetify/components/VIcon'
 
-  // Component registration for library usage
-  defineOptions({
-    name: 'WeekView',
-  })
-
   const props = defineProps<WeekViewProps>()
   const emit = defineEmits<WeekViewEmits>()
 
-  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data) => {
-    emit('event-drop', data)
+  const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data: any) => {
+    emit('event-drop', {
+      event: data.event,
+      date: data.date,
+      newEnd: data.newEnd,
+      newStart: data.newStart,
+      oldEnd: data.oldEnd,
+      oldStart: data.oldStart,
+    } as EventDropData)
   })
 
-  const { timeSlotHeight } = useResponsive()
+  const { createLocalizedDayjs } = useLocale()
 
   const weekDays = computed(() => {
     return getWeekDays(props.currentDate, props.config.firstDayOfWeek)
@@ -138,8 +151,31 @@
     return generateTimeSlots(props.config.minTime, props.config.maxTime, props.config.timeSlotDuration)
   })
 
+  // Create a reactive computed for events per day
+  const eventsPerDay = computed(() => {
+    const eventsByDay = new Map<string, CalendarEventInternal[]>()
+
+    weekDays.value.forEach((day) => {
+      const dayKey = day.format('YYYY-MM-DD')
+      eventsByDay.set(dayKey, utilGetEventsForDay(props.events, day))
+    })
+
+    return eventsByDay
+  })
+
+  // Computed property to access container height
+  const availableHeight = computed(() => {
+    return props.containerHeight || 500 // Default fallback height
+  })
+
+  const timeSlotDuration = computed(() => props.config.timeSlotDuration ?? 60)
+  const minTime = computed(() => props.config.minTime || '00:00')
+  const maxTime = computed(() => props.config.maxTime || '24:00')
+  const dynamicTimeSlots = useDynamicTimeSlots(availableHeight, minTime, maxTime, timeSlotDuration, 60)
+
   const getEventsForDay = (date: Dayjs) => {
-    return utilGetEventsForDay(props.events, date)
+    const dayKey = date.format('YYYY-MM-DD')
+    return eventsPerDay.value.get(dayKey) || []
   }
 
   const getEventStyle = (event: CalendarEventInternal, day: Dayjs): CSSProperties => {
@@ -163,7 +199,7 @@
     const duration = eventEnd.diff(eventStart, 'minute')
 
     const slotDuration = props.config.timeSlotDuration || 60
-    const slotHeight = timeSlotHeight.value
+    const slotHeight = dynamicTimeSlots.value.height
 
     const top = Math.max(0, (startMinutes / slotDuration) * slotHeight)
     const height = Math.max((duration / slotDuration) * slotHeight, 20)
@@ -190,16 +226,46 @@
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
     if (target instanceof HTMLElement) {
+      target.style.opacity = '0.5'
+      target.style.transform = 'rotate(3deg)'
       dragStart(event, target)
     }
   }
 
   const handleDrop = (date: Dayjs) => {
-    drop(date.startOf('day'))
+    // Clear all drag highlights
+    document.querySelectorAll('.drag-highlight, .drag-highlight-slot').forEach((el) => {
+      el.classList.remove('drag-highlight', 'drag-highlight-slot')
+    })
+    // Reset dragged element styling
+    document.querySelectorAll('[style*="opacity: 0.5"]').forEach((el) => {
+      const element = el as HTMLElement
+      element.style.opacity = ''
+      element.style.transform = ''
+    })
+    drop(date)
   }
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight')
+  }
+
+  const handleDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight')
+  }
+
+  const handleTimeSlotDragOver = (event: DragEvent) => {
+    event.preventDefault()
+    const target = event.currentTarget as HTMLElement
+    target.classList.add('drag-highlight-slot')
+  }
+
+  const handleTimeSlotDragLeave = (event: DragEvent) => {
+    const target = event.currentTarget as HTMLElement
+    target.classList.remove('drag-highlight-slot')
   }
 </script>
 
@@ -310,6 +376,10 @@
     box-sizing: border-box;
   }
 
+  .show-time-grid .time-slot:first-child .time-label {
+    visibility: hidden;
+  }
+
   .time-label {
     position: absolute;
     top: -8px;
@@ -407,5 +477,21 @@
     font-size: 0.75rem;
     opacity: 0.9;
     margin-top: 2px;
+  }
+
+  /* Drag and Drop Highlighting Styles */
+  .drag-highlight {
+    background-color: rgba(25, 118, 210, 0.1) !important;
+    border: 2px dashed rgba(25, 118, 210, 0.5) !important;
+  }
+
+  .drag-highlight-slot {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    border: 1px solid rgba(25, 118, 210, 0.3) !important;
+  }
+
+  .week-event[draggable='true']:hover {
+    transform: scale(1.02);
+    transition: transform 0.1s ease;
   }
 </style>

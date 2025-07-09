@@ -11,7 +11,7 @@
       @navigate-today="navigateToday"
     />
 
-    <div class="calendar-container">
+    <div ref="calendarContainer" class="calendar-container">
       <component
         :is="currentViewComponent"
         :key="`${view}-${currentDate.format('YYYY-MM-DD')}`"
@@ -20,6 +20,7 @@
         :current-date="currentDate"
         :view="current_view_model"
         :loading="loading"
+        :container-height="containerHeight"
         @event-update="handleEventUpdate"
         @event-click="handleEventClick"
         @event-drop="handleEventDrop"
@@ -53,7 +54,7 @@
     type ViewChangeHandler,
   } from '@/plugin/types'
   import dayjs, { Dayjs } from 'dayjs'
-  import { computed, inject, onMounted, ref, watch } from 'vue'
+  import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
   import { filterEvents, getEventsInRange, normalizeEvents, weekdayToNumber } from '../utils'
 
   const globalConfig = inject<CalendarConfig>('calendarGlobalConfig')
@@ -89,6 +90,12 @@
 
   const loading = ref(false)
 
+  // Container height tracking
+  const calendarContainer = ref<HTMLElement>()
+  const containerHeight = ref(0)
+
+  let resizeObserver: ResizeObserver | null = null
+
   // Helper functions to normalize dates
   const normalizeDateToDayjs = (date: Date | string | Dayjs): Dayjs => {
     if (typeof date === 'string') return dayjs(date)
@@ -102,7 +109,7 @@
 
   // Computed
   const filteredEvents = computed(() => {
-    const normalizedEvents = normalizeEvents(mergedProps.value.events || [])
+    const normalizedEvents = normalizeEvents(event_model.value || [])
     return filterEvents(normalizedEvents, mergedProps.value.filters || {})
   })
 
@@ -248,6 +255,18 @@
   }
 
   const handleEventDrop: EventDropHandler = async (data) => {
+    // Update the event internally first
+    const eventIndex = event_model.value.findIndex((e) => e.id === data.event.id)
+    if (eventIndex !== -1) {
+      const updatedEvent = {
+        ...event_model.value[eventIndex],
+        start: data.newStart.toISOString(),
+        end: data.newEnd.toISOString(),
+      }
+      event_model.value[eventIndex] = updatedEvent
+    }
+
+    // Then emit the event for external handlers
     emit('event-drop', data)
   }
 
@@ -278,8 +297,8 @@
     () => mergedProps.value.events,
     (newEvents) => {
       if (newEvents) {
-        const normalizedEvents = normalizeEvents(newEvents)
-        event_model.value = normalizedEvents
+        // Update the model with the raw events (not normalized)
+        event_model.value = newEvents
       }
     },
     { immediate: true }
@@ -317,11 +336,26 @@
     { immediate: true }
   )
 
+  // Set up container height tracking
   onMounted(() => {
-    // Initialize the store with props
-    if (mergedProps.value.events?.length) {
-      const normalizedEvents = normalizeEvents(mergedProps.value.events)
-      event_model.value = normalizedEvents
+    if (calendarContainer.value) {
+      containerHeight.value = calendarContainer.value.clientHeight
+
+      // Create ResizeObserver to track container size changes
+      resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          containerHeight.value = entry.contentRect.height
+        }
+      })
+
+      resizeObserver.observe(calendarContainer.value)
+    }
+  })
+
+  onUnmounted(() => {
+    if (resizeObserver) {
+      resizeObserver.disconnect()
+      resizeObserver = null
     }
   })
 </script>

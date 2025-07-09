@@ -66,6 +66,7 @@ export interface CalendarConfig {
 export interface ViewProps extends CalendarComponentPropsBase {
   events: CalendarEventInternal[]
   currentDate: Dayjs
+  containerHeight?: number
 }
 
 export interface CalendarComponentProps extends CalendarComponentPropsBase {
