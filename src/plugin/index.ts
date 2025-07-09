@@ -1,9 +1,9 @@
-import CalendarComponent from '@/plugin/components/CalendarComponent.vue'
-import CalendarToolbar from '@/plugin/components/CalendarToolbarButtons.vue'
-import AgendaView from '@/plugin/components/views/AgendaView.vue'
-import DayView from '@/plugin/components/views/DayView.vue'
-import MonthView from '@/plugin/components/views/MonthView.vue'
-import WeekView from '@/plugin/components/views/WeekView.vue'
+import CalendarComponent from './components/CalendarComponent.vue'
+import CalendarToolbar from './components/CalendarToolbarButtons.vue'
+import AgendaView from './components/views/AgendaView.vue'
+import DayView from './components/views/DayView.vue'
+import MonthView from './components/views/MonthView.vue'
+import WeekView from './components/views/WeekView.vue'
 import type { App } from 'vue'
 import CalendarFilters from './components/CalendarFilters.vue'
 import { useLocale } from './composables/useLocale'
@@ -48,3 +48,27 @@ const mergeConfig = (userConfig: Partial<CalendarConfig> = {}): CalendarConfig =
     ...userConfig,
   }
 }
+
+// Export components
+export {
+  CalendarComponent,
+  CalendarToolbar,
+  CalendarFilters,
+  AgendaView,
+  DayView,
+  MonthView,
+  WeekView,
+}
+
+// Export types
+export * from './types'
+
+// Export composables
+export * from './composables'
+
+// Export utilities
+export * from './utils'
+
+// Export locales
+export { locale as localeEn } from './locale/en'
+export { locale as localeDe } from './locale/de'
