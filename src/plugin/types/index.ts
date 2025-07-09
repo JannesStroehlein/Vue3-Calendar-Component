@@ -71,7 +71,7 @@ export interface ViewProps extends CalendarComponentPropsBase {
 export interface CalendarComponentProps extends CalendarComponentPropsBase {
   events?: CalendarEvent[]
   view?: CalendarView
-  currentDate?: string | Date
+  currentDate?: string | Date | Dayjs
   filters?: FilterOptions
   lazyLoad?: LazyLoadHandler
 }

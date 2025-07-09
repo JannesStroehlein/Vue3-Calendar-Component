@@ -12,6 +12,15 @@ export interface CalendarLocale {
     completed: string
     cancelled: string
   }
+  views: {
+    agenda: {
+      noEvents: string
+      buttons: {
+        markEventCompleted: string
+        cancelEvent: string
+      }
+    }
+  }
   toolbar: {
     buttons: {
       month: string
@@ -47,5 +56,9 @@ export interface CalendarLocale {
      */
     endOfWeek?: string
     month?: string
+    /**
+     * Short format for displaying durations in days, hours and minutes.
+     */
+    duration: (days: number, hours: number, minutes: number) => string
   }
 }

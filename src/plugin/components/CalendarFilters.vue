@@ -3,17 +3,30 @@
     <v-row>
       <v-col cols="12" md="4">
         <v-text-field
-v-model="searchText" :label="locale?.toolbar.searchPlaceholder ?? 'Search events...'"
-          prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" clearable @input="handleSearchChange" />
+          v-model="searchText"
+          :label="locale?.current.value.toolbar.searchPlaceholder ?? 'Search events...'"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          density="compact"
+          clearable
+          @input="handleSearchChange"
+        />
       </v-col>
 
       <v-col cols="12" md="4">
         <v-select
-v-model="selectedStatuses" :items="statusOptions"
-          :label="locale?.toolbar.filters.statusLabel ?? 'Filter by status'" multiple variant="outlined"
-          density="compact" chips closable-chips @update:model-value="handleStatusChange">
-          <template #chip="{ props, item }">
-            <v-chip v-bind="props" :color="getStatusColor(item.value)" size="small">
+          v-model="selectedStatuses"
+          :items="statusOptions"
+          :label="locale?.current.value.toolbar.filters.statusLabel ?? 'Filter by status'"
+          multiple
+          variant="outlined"
+          density="compact"
+          chips
+          closable-chips
+          @update:model-value="handleStatusChange"
+        >
+          <template #chip="{ props: templateProps, item }">
+            <v-chip v-bind="templateProps" :color="getStatusColor(item.value)" size="small">
               {{ item.title }}
             </v-chip>
           </template>
@@ -23,14 +36,14 @@ v-model="selectedStatuses" :items="statusOptions"
       <v-col cols="12" md="4">
         <div class="d-flex align-center">
           <v-btn variant="outlined" size="small" @click="clearFilters">
-            {{ locale?.toolbar.clearFilters ?? 'Clear Filters' }}
+            {{ locale?.current.value.toolbar.clearFilters ?? 'Clear Filters' }}
           </v-btn>
 
           <v-spacer />
 
           <v-chip v-if="activeFilterCount > 0" color="primary" size="small">
-            <span v-if="locale?.toolbar.activeFilters">
-              {{ locale.toolbar.activeFilters(activeFilterCount) }}
+            <span v-if="locale.current.value.toolbar.activeFilters">
+              {{ locale.current.value.toolbar.activeFilters(activeFilterCount) }}
             </span>
             <span v-else> {{ activeFilterCount }} filter{{ activeFilterCount > 1 ? 's' : '' }} </span>
           </v-chip>
@@ -44,16 +57,7 @@ v-model="selectedStatuses" :items="statusOptions"
   import type { CalendarFiltersEmits, CalendarFiltersProps, EventStatus, FilterOptions } from '@/plugin/types'
   import { debounce } from '@/plugin/utils'
   import { computed, ref, watch } from 'vue'
-  import {
-    VBtn,
-    VCard,
-    VChip,
-    VCol,
-    VRow,
-    VSelect,
-    VSpacer,
-    VTextField
-  } from 'vuetify/components'
+  import { VBtn, VCard, VChip, VCol, VRow, VSelect, VSpacer, VTextField } from 'vuetify/components'
   import { useLocale } from '../composables/useLocale'
 
   // Component registration for library usage
@@ -66,8 +70,8 @@ v-model="selectedStatuses" :items="statusOptions"
       VSelect,
       VChip,
       VBtn,
-      VSpacer
-    }
+      VSpacer,
+    },
   })
 
   const locale = useLocale()
@@ -79,11 +83,11 @@ v-model="selectedStatuses" :items="statusOptions"
   const selectedStatuses = ref<EventStatus[]>(props.filters.statuses || [])
 
   const statusOptions: { title?: string; value: EventStatus }[] = [
-    { title: locale.status.open, value: 'open' as EventStatus },
-    { title: locale.status.planned, value: 'planned' as EventStatus },
-    { title: locale.status.completed, value: 'completed' as EventStatus },
-    { title: locale.status.overdue, value: 'overdue' as EventStatus },
-    { title: locale.status.cancelled, value: 'cancelled' as EventStatus },
+    { title: locale.current.value.status.open, value: 'open' as EventStatus },
+    { title: locale.current.value.status.planned, value: 'planned' as EventStatus },
+    { title: locale.current.value.status.completed, value: 'completed' as EventStatus },
+    { title: locale.current.value.status.overdue, value: 'overdue' as EventStatus },
+    { title: locale.current.value.status.cancelled, value: 'cancelled' as EventStatus },
   ]
 
   const activeFilterCount = computed(() => {

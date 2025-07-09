@@ -1,15 +1,34 @@
 <template>
   <div class="calendar-component">
     <CalendarToolbar
-:current-date="currentDate" :current-view="view" :loading="loading" @view-change="handleViewChange"
-      @date-change="handleDateChange" @navigate-previous="navigatePrevious" @navigate-next="navigateNext"
-      @navigate-today="navigateToday" />
+      :current-date="currentDate"
+      :current-view="view"
+      :loading="loading"
+      @view-change="handleViewChange"
+      @date-change="handleDateChange"
+      @navigate-previous="navigatePrevious"
+      @navigate-next="navigateNext"
+      @navigate-today="navigateToday"
+    />
 
     <div class="calendar-container">
       <component
-:is="currentViewComponent" :key="`${view}-${current_date_model.format('YYYY-MM-DD')}`" :config="config"
-        :events="visibleEvents" :current-date="current_date_model" :view="current_view_model" :loading="loading"
-        @event-click="handleEventClick" @event-drop="handleEventDrop" @date-click="handleDateClick" />
+        :is="currentViewComponent"
+        :key="`${view}-${currentDate.format('YYYY-MM-DD')}`"
+        :config="config"
+        :events="visibleEvents"
+        :current-date="currentDate"
+        :view="current_view_model"
+        :loading="loading"
+        @event-update="handleEventUpdate"
+        @event-click="handleEventClick"
+        @event-drop="handleEventDrop"
+        @date-click="handleDateClick"
+      >
+        <template v-for="(_, name) in $slots" #[name]="slotProps">
+          <slot :name="name" v-bind="slotProps || {}"></slot>
+        </template>
+      </component>
     </div>
   </div>
 </template>
@@ -50,22 +69,36 @@
     currentDate: unmergedProps.currentDate || dayjs(),
     lazyLoad: unmergedProps.lazyLoad,
   }))
-  watch(mergedProps, (newProps) => {
-    console.log('Merged props updated:', newProps)
-
-  }, { immediate: true })
+  watch(
+    mergedProps,
+    (newProps) => {
+      console.log('Merged props updated:', newProps)
+    },
+    { immediate: true }
+  )
 
   const emit = defineEmits<CalendarComponentEmits>()
 
   const [event_model] = defineModel<CalendarEvent[]>('events', {
     default: () => [],
   })
-  const [current_date_model] = defineModel<Dayjs>('currentDate', {
+  const [current_date_model] = defineModel<Date | string | Dayjs>('currentDate', {
     default: () => dayjs(),
   })
   const [current_view_model] = defineModel<CalendarView>('currentView')
 
   const loading = ref(false)
+
+  // Helper functions to normalize dates
+  const normalizeDateToDayjs = (date: Date | string | Dayjs): Dayjs => {
+    if (typeof date === 'string') return dayjs(date)
+    if (date instanceof Date) return dayjs(date)
+    return date
+  }
+
+  const currentDateAsDayjs = computed(() => {
+    return normalizeDateToDayjs(current_date_model.value || dayjs())
+  })
 
   // Computed
   const filteredEvents = computed(() => {
@@ -116,7 +149,7 @@
 
   // Computed with defaults for template
   const currentDate = computed(() => {
-    return current_date_model.value || dayjs()
+    return currentDateAsDayjs.value
   })
 
   const view = computed(() => {
@@ -124,7 +157,7 @@
   })
 
   // Actions
-  function setCurrentDate(date: Dayjs) {
+  function setCurrentDate(date: Date | string | Dayjs) {
     current_date_model.value = date
   }
 
@@ -157,7 +190,7 @@
   }
 
   function navigatePrevious() {
-    const current = current_date_model.value
+    const current = currentDateAsDayjs.value
     switch (current_view_model.value) {
       case 'day':
       case 'agenda':
@@ -173,7 +206,7 @@
   }
 
   function navigateNext() {
-    const current = current_date_model.value
+    const current = currentDateAsDayjs.value
     switch (current_view_model.value) {
       case 'day':
       case 'agenda':
@@ -230,6 +263,14 @@
   const handleDateChange: DateChangeHandler = (date) => {
     setCurrentDate(date.newDate)
     emit('date-change', date)
+  }
+
+  const handleEventUpdate = (eventId: string, updates: Partial<CalendarEvent>) => {
+    const eventIndex = event_model.value.findIndex((e) => e.id === eventId)
+    if (eventIndex !== -1) {
+      const updatedEvent = { ...event_model.value[eventIndex], ...updates }
+      event_model.value[eventIndex] = updatedEvent
+    }
   }
 
   // Watchers

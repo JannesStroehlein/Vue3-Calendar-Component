@@ -6,6 +6,7 @@ import MonthView from '@/plugin/components/views/MonthView.vue'
 import WeekView from '@/plugin/components/views/WeekView.vue'
 import type { App } from 'vue'
 import CalendarFilters from './components/CalendarFilters.vue'
+import { useLocale } from './composables/useLocale'
 import { locale as locale_en } from './locale/en'
 import type { CalendarConfig, GlobalSettings } from './types'
 
@@ -37,7 +38,7 @@ export default {
 
     // Provide global config if specified
     app.provide('calendarGlobalConfig', options.calendarConfig)
-    app.provide('calendarLocale', options.locale)
+    useLocale().setLocale(options.locale)
   },
 }
 

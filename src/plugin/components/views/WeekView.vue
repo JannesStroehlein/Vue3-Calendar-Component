@@ -1,16 +1,23 @@
 <template>
   <div class="week-view">
     <div
-class="week-header" :class="{
-      'show-time-grid': config.showTimeGrid,
-      'hide-time-grid': !config.showTimeGrid,
-    }">
+      class="week-header"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid,
+      }"
+    >
       <div v-if="config.showTimeGrid" class="time-column-header" />
       <div
-v-for="day in weekDays" :key="day.format('YYYY-MM-DD')" class="day-header" :class="{
-        today: isToday(day),
-        weekend: isWeekend(day),
-      }" @click="handleDateClick({ date: day, nativeEvent: $event })">
+        v-for="day in weekDays"
+        :key="day.format('YYYY-MM-DD')"
+        class="day-header"
+        :class="{
+          today: isToday(day),
+          weekend: isWeekend(day),
+        }"
+        @click="handleDateClick({ date: day, nativeEvent: $event })"
+      >
         <div class="day-name">
           {{ day.format('ddd') }}
         </div>
@@ -21,36 +28,56 @@ v-for="day in weekDays" :key="day.format('YYYY-MM-DD')" class="day-header" :clas
     </div>
 
     <div
-class="week-body" :class="{
-      'show-time-grid': config.showTimeGrid,
-      'hide-time-grid': !config.showTimeGrid,
-    }">
+      class="week-body"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid,
+      }"
+    >
       <div v-if="config.showTimeGrid" class="time-column">
         <div
-v-for="slot in timeSlots" :key="`${slot.hour}-${slot.minute}`" class="time-slot"
-          :style="{ height: `${timeSlotHeight}px`, width: config.showTimeGrid ? '100%' : '1px' }">
+          v-for="slot in timeSlots"
+          :key="`${slot.hour}-${slot.minute}`"
+          class="time-slot"
+          :style="{ height: `${timeSlotHeight}px`, width: config.showTimeGrid ? '100%' : '1px' }"
+        >
           <span v-if="config.showTimeGrid" class="time-label">{{ slot.label }}</span>
         </div>
       </div>
 
       <div class="days-container">
         <div
-v-for="day in weekDays" :key="day.format('YYYY-MM-DD')" class="day-column" :class="{
-          today: isToday(day),
-          weekend: isWeekend(day),
-        }" @click="handleDateClick({ date: day, nativeEvent: $event })" @dragover.prevent="handleDragOver"
-          @drop="handleDrop(day)">
+          v-for="day in weekDays"
+          :key="day.format('YYYY-MM-DD')"
+          class="day-column"
+          :class="{
+            today: isToday(day),
+            weekend: isWeekend(day),
+          }"
+          @click="handleDateClick({ date: day, nativeEvent: $event })"
+          @dragover.prevent="handleDragOver"
+          @drop="handleDrop(day)"
+        >
           <div
-v-for="slot in timeSlots" :key="`${day.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
-            class="time-slot" :style="{ height: `${timeSlotHeight}px` }"
-            :class="{ 'time-grid': config.showTimeGrid }" />
+            v-for="slot in timeSlots"
+            :key="`${day.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
+            class="time-slot"
+            :style="{ height: `${timeSlotHeight}px` }"
+            :class="{ 'time-grid': config.showTimeGrid }"
+          />
 
           <div
-v-for="event in getEventsForDay(day)" :key="event.id" class="week-event"
-            :style="getEventStyle(event, day)" :class="{
+            v-for="event in getEventsForDay(day)"
+            :key="event.id"
+            class="week-event"
+            :style="getEventStyle(event, day)"
+            :class="{
               'event-completed': event.status === 'completed',
-            }" draggable="true" @click.stop="handleEventClick(event, $event)"
-            @dragstart="handleDragStart(event, $event.target)">
+            }"
+            draggable="true"
+            @click.stop="handleEventClick(event, $event)"
+            @dragstart="handleDragStart(event, $event.target)"
+          >
             <div class="event-content">
               <v-icon v-if="event.icon" :icon="event.icon" size="small" class="mr-1" />
               <div class="event-text">

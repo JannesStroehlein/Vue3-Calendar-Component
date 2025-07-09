@@ -1,16 +1,21 @@
 <template>
   <div class="day-view">
     <div
-class="day-header" :class="{
-      'show-time-grid': config.showTimeGrid,
-      'hide-time-grid': !config.showTimeGrid,
-    }">
+      class="day-header"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid,
+      }"
+    >
       <div v-if="config.showTimeGrid" class="time-column-header" />
       <div
-class="day-header-content" :class="{
-        today: isToday(currentDate),
-        weekend: isWeekend(currentDate),
-      }" @click="handleDateClick({ date: currentDate, nativeEvent: $event })">
+        class="day-header-content"
+        :class="{
+          today: isToday(currentDate),
+          weekend: isWeekend(currentDate),
+        }"
+        @click="handleDateClick({ date: currentDate, nativeEvent: $event })"
+      >
         <div class="day-name">
           {{ currentDate.format('dddd') }}
         </div>
@@ -24,29 +29,45 @@ class="day-header-content" :class="{
     </div>
 
     <div
-class="day-body" :class="{
-      'show-time-grid': config.showTimeGrid,
-      'hide-time-grid': !config.showTimeGrid,
-    }">
+      class="day-body"
+      :class="{
+        'show-time-grid': config.showTimeGrid,
+        'hide-time-grid': !config.showTimeGrid,
+      }"
+    >
       <div v-if="config.showTimeGrid" class="time-column">
         <div
-v-for="slot in timeSlots" :key="`${slot.hour}-${slot.minute}`" class="time-slot"
-          :style="{ height: `${timeSlotHeight}px` }">
+          v-for="slot in timeSlots"
+          :key="`${slot.hour}-${slot.minute}`"
+          class="time-slot"
+          :style="{ height: `${timeSlotHeight}px` }"
+        >
           <span class="time-label">{{ slot.label }}</span>
         </div>
       </div>
 
       <div class="day-content">
         <div
-v-for="slot in timeSlots" :key="`${currentDate.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
-          class="time-slot" :style="{ height: `${timeSlotHeight}px` }" :class="{ 'time-grid': config.showTimeGrid }"
-          @click="handleTimeSlotClick(slot)" />
+          v-for="slot in timeSlots"
+          :key="`${currentDate.format('YYYY-MM-DD')}-${slot.hour}-${slot.minute}`"
+          class="time-slot"
+          :style="{ height: `${timeSlotHeight}px` }"
+          :class="{ 'time-grid': config.showTimeGrid }"
+          @click="handleTimeSlotClick(slot)"
+        />
 
         <div
-v-for="event in dayEvents" :key="event.id" class="day-event" :style="getEventStyle(event)" :class="{
-          'event-completed': event.status === 'completed',
-        }" draggable @click.stop="handleEventClick({ event, nativeEvent: $event })"
-          @dragstart="handleDragStart(event, $event.target)">
+          v-for="event in dayEvents"
+          :key="event.id"
+          class="day-event"
+          :style="getEventStyle(event)"
+          :class="{
+            'event-completed': event.status === 'completed',
+          }"
+          draggable
+          @click.stop="handleEventClick({ event, nativeEvent: $event })"
+          @dragstart="handleDragStart(event, $event.target)"
+        >
           <div class="event-content">
             <div class="event-header">
               <v-icon v-if="event.icon" :icon="event.icon" size="small" class="mr-2" />

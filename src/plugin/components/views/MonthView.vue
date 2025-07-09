@@ -9,26 +9,39 @@
     <div class="month-grid">
       <div v-for="(week, weekIndex) in monthWeeks" :key="weekIndex" class="month-week">
         <div
-v-for="day in week" :key="day.format('YYYY-MM-DD')" class="month-day" :class="{
-          'current-month': day.month() === currentDate.month(),
-          'other-month': day.month() !== currentDate.month(),
-          today: isToday(day),
-          weekend: isWeekend(day),
-        }" @click="handleDateClick({ date: day, nativeEvent: $event })" @dragover.prevent="handleDragOver"
-          @drop="handleDrop(day)">
+          v-for="day in week"
+          :key="day.format('YYYY-MM-DD')"
+          class="month-day"
+          :class="{
+            'current-month': day.month() === currentDate.month(),
+            'other-month': day.month() !== currentDate.month(),
+            today: isToday(day),
+            weekend: isWeekend(day),
+          }"
+          @click="handleDateClick({ date: day, nativeEvent: $event })"
+          @dragover.prevent="handleDragOver"
+          @drop="handleDrop(day)"
+        >
           <div class="day-number">
             {{ day.date() }}
           </div>
 
           <div class="day-events">
             <div
-v-for="event in getEventsForDay(day)" :key="event.id" class="month-event" :style="{
-              backgroundColor: getEventColor(event),
-              color: getEventTextColor(event),
-            }" :class="{
-              'event-completed': event.status === 'completed',
-            }" draggable="true" @click.stop="handleEventClick({ event, nativeEvent: $event })"
-              @dragstart="handleDragStart(event, $event.target)">
+              v-for="event in getEventsForDay(day)"
+              :key="event.id"
+              class="month-event"
+              :style="{
+                backgroundColor: getEventColor(event),
+                color: getEventTextColor(event),
+              }"
+              :class="{
+                'event-completed': event.status === 'completed',
+              }"
+              draggable="true"
+              @click.stop="handleEventClick({ event, nativeEvent: $event })"
+              @dragstart="handleDragStart(event, $event.target)"
+            >
               <v-icon v-if="event.icon" :icon="event.icon" size="x-small" class="mr-1" />
               <span class="event-title">{{ event.title }}</span>
             </div>
@@ -41,6 +54,7 @@ v-for="event in getEventsForDay(day)" :key="event.id" class="month-event" :style
 
 <script setup lang="ts">
   import { useDragAndDrop } from '@/plugin/composables'
+  import { useLocale } from '@/plugin/composables/useLocale'
   import type {
     CalendarEventInternal,
     DateClickHandler,
@@ -70,6 +84,8 @@ v-for="event in getEventsForDay(day)" :key="event.id" class="month-event" :style
   const props = defineProps<MonthViewProps>()
   const emit = defineEmits<MonthViewEmits>()
 
+  const { createLocalizedDayjs } = useLocale()
+
   const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data: any) => {
     emit('event-drop', {
       event: data.event,
@@ -82,11 +98,13 @@ v-for="event in getEventsForDay(day)" :key="event.id" class="month-event" :style
   })
 
   const weekDayNames = computed(() => {
-    const firstDay = props.currentDate.startOf('week').add(weekdayToNumber(props.config.firstDayOfWeek!), 'day')
+    const localizedCurrentDate = createLocalizedDayjs(props.currentDate)
+    const firstDay = localizedCurrentDate.startOf('week').add(weekdayToNumber(props.config.firstDayOfWeek!), 'day')
     const days: string[] = []
     for (let i = 0; i < 7; i++) {
-      days.push(firstDay.add(i, 'day').format('ddd'))
+      days.push(createLocalizedDayjs(firstDay.add(i, 'day')).format('ddd'))
     }
+    console.log(days)
     return days
   })
 

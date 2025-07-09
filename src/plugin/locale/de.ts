@@ -9,6 +9,15 @@ export const locale: CalendarLocale = {
     completed: 'Abgeschlossen',
     cancelled: 'Abgebrochen',
   },
+  views: {
+    agenda: {
+      noEvents: 'Keine Ereignisse für diesen Tag geplant',
+      buttons: {
+        markEventCompleted: 'Abgeschlossen markieren',
+        cancelEvent: 'Absagen',
+      },
+    },
+  },
   toolbar: {
     buttons: {
       month: 'Monat',
@@ -36,5 +45,12 @@ export const locale: CalendarLocale = {
     startOfWeek: 'D. MMM',
     endOfWeek: 'D. MMM YYYY',
     month: 'MMMM YYYY',
+    duration: (days: number, hours: number, minutes: number): string => {
+      const parts = []
+      if (days > 0) parts.push(`${days} t`)
+      if (hours > 0) parts.push(`${hours} h`)
+      if (minutes > 0) parts.push(`${minutes} m`)
+      return parts.join(', ')
+    },
   },
 }

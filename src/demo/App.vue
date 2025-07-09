@@ -3,6 +3,16 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-title>Vue 3 Calendar Component Demo</v-app-bar-title>
       <v-spacer />
+      <v-select
+        v-model="selectedLocale"
+        :items="localeOptions"
+        item-title="label"
+        item-value="value"
+        label="Language"
+        dense
+        hide-details
+        style="max-width: 150px; margin-right: 16px"
+      />
       <v-btn icon @click="toggleTheme">
         <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
       </v-btn>
@@ -17,6 +27,7 @@
                 <span class="text-h5">Calendar Demo</span>
                 <v-spacer />
                 <v-btn color="primary" @click="addSampleEvent"> Add Sample Event </v-btn>
+                <v-btn color="secondary" @click="testDateFormats"> Test Date Formats </v-btn>
               </v-card-title>
 
               <v-card-text>
@@ -24,10 +35,18 @@
 
                 <div style="height: 600px">
                   <CalendarComponent
-:current-date="currentDate" :events="events" :view="currentView"
-                    :config="calendarConfig" :filters="filters" :lazy-load="loadEvents" @event-click="handleEventClick"
-                    @event-drop="handleEventDrop" @date-click="handleDateClick" @view-change="handleViewChange"
-                    @date-change="handleDateChange" />
+                    v-model:current-date="currentDate"
+                    :events="events"
+                    :view="currentView"
+                    :config="calendarConfig"
+                    :filters="filters"
+                    :lazy-load="loadEvents"
+                    @event-click="handleEventClick"
+                    @event-drop="handleEventDrop"
+                    @date-click="handleDateClick"
+                    @view-change="handleViewChange"
+                    @date-change="handleDateChange"
+                  />
                 </div>
               </v-card-text>
             </v-card>
@@ -63,13 +82,18 @@
               <v-card-title>Configuration</v-card-title>
               <v-card-text>
                 <v-select
-v-model="calendarConfig.firstDayOfWeek" :items="[
-                  { title: 'Sunday', value: 0 },
-                  { title: 'Monday', value: 1 },
-                ]" label="First Day of Week" />
+                  v-model="calendarConfig.firstDayOfWeek"
+                  :items="[
+                    { title: 'Sunday', value: 'sunday' },
+                    { title: 'Monday', value: 'monday' },
+                  ]"
+                  label="First Day of Week"
+                />
                 <v-select
-v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
-                  label="Time Slot Duration (minutes)" />
+                  v-model="calendarConfig.timeSlotDuration"
+                  :items="[15, 30, 60, 120]"
+                  label="Time Slot Duration (minutes)"
+                />
                 <v-switch v-model="calendarConfig.showTimeGrid" label="Show Time Grid" />
               </v-card-text>
             </v-card>
@@ -83,21 +107,26 @@ v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
 <script setup lang="ts">
   import CalendarComponent from '@/plugin/components/CalendarComponent.vue'
   import CalendarFilters from '@/plugin/components/CalendarFilters.vue'
-  import type {
-    CalendarConfig,
-    CalendarEvent,
-    CalendarEventInternal,
-    CalendarView,
-    EventClickData,
-    EventDropData,
-    FilterOptions,
-    FiltersChangeData,
-    LazyLoadData,
-    ViewChangeData
+  import { useLocale } from '@/plugin/composables/useLocale'
+  import { locale as locale_de } from '@/plugin/locale/de'
+  import { locale as locale_en } from '@/plugin/locale/en'
+  import {
+    type CalendarConfig,
+    type CalendarEvent,
+    type CalendarEventInternal,
+    type CalendarView,
+    type EventClickData,
+    type EventDropData,
+    type FilterOptions,
+    type FiltersChangeData,
+    type LazyLoadData,
+    type ViewChangeData,
   } from '@/plugin/types'
+  import type { Dayjs } from 'dayjs'
   import dayjs from 'dayjs'
-  import { computed, ref } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { useTheme } from 'vuetify'
+  const { setLocale } = useLocale()
 
   const theme = useTheme()
   const isDark = computed(() => theme.global.current.value.dark)
@@ -137,7 +166,16 @@ v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
   ])
 
   const currentView = ref<CalendarView>('month')
-  const currentDate = ref(dayjs())
+  const currentDate = ref<Date | string | Dayjs>(dayjs())
+
+  // Locale options
+  const localeOptions = ref([
+    { label: 'English', value: 'en' },
+    { label: 'Deutsch', value: 'de' },
+  ])
+
+  const selectedLocale = ref('en')
+
   const filters = ref<FilterOptions>({})
   const selectedEvent = ref<CalendarEventInternal | null>(null)
   const showEventDialog = ref(false)
@@ -147,7 +185,7 @@ v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
     timeSlotDuration: 60,
     minTime: '08:00',
     maxTime: '18:00',
-    showTimeGrid: true
+    showTimeGrid: true,
   })
 
   // Computed
@@ -161,26 +199,27 @@ v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
   }
 
+  // Watch for locale changes
+  watch(selectedLocale, (newLocale) => {
+    const localeObj = newLocale === 'de' ? locale_de : locale_en
+    setLocale(localeObj)
+  })
+
   const addSampleEvent = () => {
     const newEvent: CalendarEvent = {
       id: Date.now().toString(),
       title: `New Event ${events.value.length + 1}`,
       start: dayjs()
-        .add(Math.floor(Math.random() * 7), 'day')
-        .hour(10)
+        .hour(Math.floor(Math.random() * 8) + 9)
         .minute(0)
         .toISOString(),
       end: dayjs()
-        .add(Math.floor(Math.random() * 7), 'day')
-        .hour(11)
-        .minute(0)
+        .hour(Math.floor(Math.random() * 8) + 9)
+        .minute(30)
         .toISOString(),
-      status: 'open',
-      color: '#9c27b0',
-      icon: 'mdi-star',
-      description: 'Dynamically added sample event',
+      status: ['open', 'planned', 'completed'][Math.floor(Math.random() * 3)] as any,
+      color: ['#1976d2', '#f44336', '#4caf50'][Math.floor(Math.random() * 3)],
     }
-
     events.value.push(newEvent)
   }
 
@@ -225,12 +264,37 @@ v-model="calendarConfig.timeSlotDuration" :items="[15, 30, 60, 120]"
   const handleViewChange = (data: ViewChangeData) => {
     console.log('View changed:', data.newView, data.currentDate.format('YYYY-MM-DD'))
     currentView.value = data.newView
-    currentDate.value = data.currentDate
+    currentDate.value = data.currentDate.toISOString()
   }
 
   const handleDateChange = (date: any) => {
     console.log('Date changed:', date.format('YYYY-MM-DD'))
     currentDate.value = date
+  }
+
+  const testDateFormats = () => {
+    // Test different date input formats
+    const formats = [
+      new Date(), // Date object
+      '2025-07-15', // ISO string
+      dayjs().add(2, 'days'), // Dayjs object
+      dayjs().subtract(1, 'week').toDate(), // Date from Dayjs
+      '2025-08-01T10:00:00Z', // Full ISO datetime string
+    ]
+
+    let currentIndex = 0
+    const interval = setInterval(() => {
+      if (currentIndex < formats.length) {
+        currentDate.value = formats[currentIndex]
+        console.log(`Testing format ${currentIndex + 1}:`, formats[currentIndex])
+        currentIndex++
+      } else {
+        clearInterval(interval)
+        // Reset to original
+        currentDate.value = dayjs()
+        console.log('Date format test completed')
+      }
+    }, 2000)
   }
 </script>
 
