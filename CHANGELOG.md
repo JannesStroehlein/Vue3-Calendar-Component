@@ -1,3 +1,17 @@
+## 1.4.0 (2025-07-09)
+
+* Merge pull request #1 from JannesStroehlein/develop ([0efee36](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/0efee36)), closes [#1](https://github.com/JannesStroehlein/Vue3-Calendar-Component/issues/1)
+* feat: Enhance calendar component with localization support and event handling ([e35a953](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/e35a953))
+* feat: enhance plugin exports and improve import paths for components ([2af5c90](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/2af5c90))
+* feat: Implement dynamic time slot handling ([e5edbca](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/e5edbca))
+* fix: fixed demo app plugin registration ([63235f4](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/63235f4))
+* fix: import in src/index.ts ([b24cafe](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/b24cafe))
+* chore: removed obsolete pinia import ([178bf3a](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/178bf3a))
+* tests: started fixing tests to work with refactored code ([b5f2331](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/b5f2331))
+* docs: removed out of date file ([2774aa5](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/2774aa5))
+* refactor: refactored state management & type safety ([ddf7a7b](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ddf7a7b))
+* build: updates packages and improved linting & style ([db103c4](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/db103c4))
+
 ## <small>1.3.2 (2025-07-01)</small>
 
 * fix: cSS issue in tests ([ef3bb36](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ef3bb36))
