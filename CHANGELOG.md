@@ -1,3 +1,10 @@
+## 1.6.0 (2025-07-15)
+
+* revert: use deprecated way of changing theme in demo app because new way does not work ([ace28bd](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ace28bd))
+* feat: added slot to show flyout for each event ([1deb31e](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/1deb31e))
+* Merge branch 'main' of https://github.com/JannesStroehlein/vue3-calendar-component ([6bb7134](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/6bb7134))
+* fix: always use correct weekday names in month view ([ab2da44](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ab2da44))
+
 ## <small>1.5.2 (2025-07-15)</small>
 
 * fix: removed duplicate call to lazy load events ([0e7b463](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/0e7b463))
