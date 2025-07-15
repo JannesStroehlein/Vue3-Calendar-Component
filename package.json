@@ -1,6 +1,6 @@
 {
   "name": "vue3-calendar-component",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "A comprehensive Vue 3 Calendar component with Vuetify 3, TypeScript, and advanced features",
   "author": "Jannes Ströhlein",
   "license": "MIT",
