@@ -91,6 +91,30 @@ export interface CalendarToolbarButtonsProps {
   loading?: boolean
 }
 
+export interface MonthEventViewProps extends CalendarComponentPropsBase {
+  event: CalendarEventInternal
+  day: Dayjs
+  handleEventClick: EventClickHandler
+  handleDragStart: (event: CalendarEventInternal, target: EventTarget) => void
+}
+
+export interface WeekEventViewProps extends CalendarComponentPropsBase {
+  event: CalendarEventInternal
+  day: Dayjs
+  dynamicTimeSlots: DynamicTimeSlots
+  handleEventClick: EventClickHandler
+  handleDragStart: (event: CalendarEventInternal, target: EventTarget) => void
+}
+
+export interface DayEventViewProps extends CalendarComponentPropsBase {
+  event: CalendarEventInternal
+  day: Dayjs
+  dynamicTimeSlots: DynamicTimeSlots
+  handleEventClick: EventClickHandler
+  handleDragStart: (event: CalendarEventInternal, target: EventTarget) => void
+}
+
+
 export type WeekViewProps = ViewProps
 export type MonthViewProps = ViewProps
 export type DayViewProps = ViewProps
@@ -264,3 +288,14 @@ export type DateClickHandler = (data: DateClickData) => void
 export type LazyLoadHandler = (data: LazyLoadData) => CalendarEvent[] | Promise<CalendarEvent[]>
 export type ViewChangeHandler = (data: ViewChangeData) => void
 export type DateChangeHandler = (data: DateChangeData) => void
+
+// ----------------------------------------------------------------------------------
+//  Utilities
+// ----------------------------------------------------------------------------------
+
+export interface DynamicTimeSlots {
+  height: number
+  numberOfSlots: number
+  minTime: number
+  maxTime: number
+}

@@ -16,6 +16,7 @@ Vue 3 Calendar Component is a comprehensive calendar component library built wit
 - [Lazy Loading](#lazy-loading)
 - [Localization](#localization)
 - [API Reference](#api-reference)
+  - [Slots](#component-slots)
 - [Examples](#examples)
 
 ## Installation
@@ -60,8 +61,8 @@ app.use(Vue3CalendarComponent, {
   globalConfig: {
     firstDayOfWeek: 1, // Monday
     timeSlotDuration: 60, // 1 hour slots
-    showTimeGrid: true
-  }
+    showTimeGrid: true,
+  },
 })
 
 app.mount('#app')
@@ -72,48 +73,43 @@ app.mount('#app')
 ```vue
 <template>
   <div style="height: 600px;">
-    <CalendarComponent
-      :events="events"
-      view="month"
-      @event-click="handleEventClick"
-      @event-drop="handleEventDrop"
-    />
+    <CalendarComponent :events="events" view="month" @event-click="handleEventClick" @event-drop="handleEventDrop" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { CalendarEvent } from 'vue3-calendar-component'
+  import { ref } from 'vue'
+  import type { CalendarEvent } from 'vue3-calendar-component'
 
-const events = ref<CalendarEvent[]>([
-  {
-    id: '1',
-    title: 'Team Meeting',
-    start: '2025-07-01T10:00:00',
-    end: '2025-07-01T11:00:00',
-    status: 'planned',
-    color: '#1976d2',
-    icon: 'mdi-account-group'
-  },
-  {
-    id: '2',
-    title: 'Project Deadline',
-    start: '2025-07-05T09:00:00',
-    end: '2025-07-05T17:00:00',
-    status: 'open',
-    color: '#f44336',
-    icon: 'mdi-flag'
+  const events = ref<CalendarEvent[]>([
+    {
+      id: '1',
+      title: 'Team Meeting',
+      start: '2025-07-01T10:00:00',
+      end: '2025-07-01T11:00:00',
+      status: 'planned',
+      color: '#1976d2',
+      icon: 'mdi-account-group',
+    },
+    {
+      id: '2',
+      title: 'Project Deadline',
+      start: '2025-07-05T09:00:00',
+      end: '2025-07-05T17:00:00',
+      status: 'open',
+      color: '#f44336',
+      icon: 'mdi-flag',
+    },
+  ])
+
+  const handleEventClick = (event: CalendarEvent, nativeEvent: MouseEvent) => {
+    console.log('Event clicked:', event)
   }
-])
 
-const handleEventClick = (event: CalendarEvent, nativeEvent: MouseEvent) => {
-  console.log('Event clicked:', event)
-}
-
-const handleEventDrop = (data: EventDropData) => {
-  console.log('Event dropped:', data)
-  // Update event in your data store
-}
+  const handleEventDrop = (data: EventDropData) => {
+    console.log('Event dropped:', data)
+    // Update event in your data store
+  }
 </script>
 ```
 
@@ -134,8 +130,8 @@ app.use(Vue3CalendarComponent, {
     timeGridDivisions: 4,
     locale: 'en',
     dateFormat: 'YYYY-MM-DD',
-    timeFormat: 'HH:mm'
-  }
+    timeFormat: 'HH:mm',
+  },
 })
 ```
 
@@ -148,7 +144,7 @@ Override global settings per component:
   :config="{
     firstDayOfWeek: 1,
     timeSlotDuration: 60,
-    showTimeGrid: false
+    showTimeGrid: false,
   }"
   :events="events"
 />
@@ -160,21 +156,21 @@ Override global settings per component:
 
 ```typescript
 interface CalendarEvent {
-  id: string                    // Unique identifier
-  title: string                 // Event title
-  start: string | Date | Dayjs  // Start date/time
-  end?: string | Date | Dayjs   // End date/time (optional)
-  allDay?: boolean             // All-day event flag
-  color?: string               // Primary color
-  backgroundColor?: string     // Background color
-  borderColor?: string         // Border color
-  textColor?: string          // Text color
-  icon?: string               // Material Design Icon
-  status?: EventStatus        // Event status
-  subtitle?: string           // Secondary text
-  description?: string        // Detailed description
-  location?: string           // Event location
-  data?: Record<string, any>  // Custom data
+  id: string // Unique identifier
+  title: string // Event title
+  start: string | Date | Dayjs // Start date/time
+  end?: string | Date | Dayjs // End date/time (optional)
+  allDay?: boolean // All-day event flag
+  color?: string // Primary color
+  backgroundColor?: string // Background color
+  borderColor?: string // Border color
+  textColor?: string // Text color
+  icon?: string // Material Design Icon
+  status?: EventStatus // Event status
+  subtitle?: string // Secondary text
+  description?: string // Detailed description
+  location?: string // Event location
+  data?: Record<string, any> // Custom data
 }
 ```
 
@@ -198,12 +194,12 @@ const styledEvent: CalendarEvent = {
   title: 'Important Meeting',
   start: '2025-07-01T10:00:00',
   end: '2025-07-01T11:00:00',
-  color: '#e91e63',           // Primary color
+  color: '#e91e63', // Primary color
   backgroundColor: '#fce4ec', // Background
-  borderColor: '#ad1457',     // Border
-  textColor: '#880e4f',       // Text
-  icon: 'mdi-star',          // Icon
-  status: 'planned'
+  borderColor: '#ad1457', // Border
+  textColor: '#880e4f', // Text
+  icon: 'mdi-star', // Icon
+  status: 'planned',
 }
 ```
 
@@ -218,6 +214,7 @@ Displays a traditional monthly calendar grid:
 ```
 
 Features:
+
 - Full month grid
 - Up to 3 events per day
 - Click to view day details
@@ -232,6 +229,7 @@ Shows a weekly timeline with hourly slots:
 ```
 
 Features:
+
 - 7-day timeline
 - Configurable time slots
 - Event positioning by time
@@ -246,6 +244,7 @@ Focuses on a single day with detailed scheduling:
 ```
 
 Features:
+
 - Single day focus
 - Hourly time slots
 - Full event details
@@ -260,6 +259,7 @@ List-based view for detailed event information:
 ```
 
 Features:
+
 - List format
 - Complete event details
 - Event actions
@@ -272,11 +272,7 @@ Features:
 Filter events by title, subtitle, or description:
 
 ```vue
-<CalendarComponent
-  :filters="{ search: 'meeting' }"
-  :events="events"
-  show-filters
-/>
+<CalendarComponent :filters="{ search: 'meeting' }" :events="events" show-filters />
 ```
 
 ### Status Filtering
@@ -284,11 +280,7 @@ Filter events by title, subtitle, or description:
 Show only events with specific statuses:
 
 ```vue
-<CalendarComponent
-  :filters="{ statuses: ['planned', 'open'] }"
-  :events="events"
-  show-filters
-/>
+<CalendarComponent :filters="{ statuses: ['planned', 'open'] }" :events="events" show-filters />
 ```
 
 ### Date Range Filtering
@@ -300,8 +292,8 @@ Filter events within a date range:
   :filters="{
     dateRange: {
       start: dayjs('2025-07-01'),
-      end: dayjs('2025-07-31')
-    }
+      end: dayjs('2025-07-31'),
+    },
   }"
   :events="events"
 />
@@ -314,7 +306,7 @@ Implement custom filter logic:
 ```vue
 <CalendarComponent
   :filters="{
-    customFilter: (event) => event.data?.priority === 'high'
+    customFilter: (event) => event.data?.priority === 'high',
   }"
   :events="events"
 />
@@ -327,10 +319,7 @@ Implement custom filter logic:
 Enable drag and drop for easy event rescheduling:
 
 ```vue
-<CalendarComponent
-  :events="events"
-  @event-drop="handleEventDrop"
-/>
+<CalendarComponent :events="events" @event-drop="handleEventDrop" />
 ```
 
 ### Custom Drop Handler
@@ -340,16 +329,16 @@ Implement custom logic when events are dropped:
 ```typescript
 const handleEventDrop = async (data: EventDropData) => {
   const { event, newStart, newEnd, oldStart, oldEnd } = data
-  
+
   try {
     // Validate the new time
     if (isTimeSlotAvailable(newStart, newEnd)) {
       // Update event in your backend
       await updateEvent(event.id, {
         start: newStart.toISOString(),
-        end: newEnd.toISOString()
+        end: newEnd.toISOString(),
       })
-      
+
       // Update local state
       updateLocalEvent(event.id, { start: newStart, end: newEnd })
     } else {
@@ -369,16 +358,13 @@ const handleEventDrop = async (data: EventDropData) => {
 Load events dynamically based on the visible date range:
 
 ```vue
-<CalendarComponent
-  :lazy-load="loadEvents"
-  view="month"
-/>
+<CalendarComponent :lazy-load="loadEvents" view="month" />
 ```
 
 ```typescript
 const loadEvents = async (data: LazyLoadData) => {
   const { start, end, view } = data
-  
+
   try {
     const response = await fetch(`/api/events?start=${start.toISOString()}&end=${end.toISOString()}`)
     const events = await response.json()
@@ -410,8 +396,8 @@ app.use(Vue3CalendarComponent, {
   globalConfig: {
     locale: 'es',
     dateFormat: 'DD/MM/YYYY',
-    timeFormat: 'HH:mm'
-  }
+    timeFormat: 'HH:mm',
+  },
 })
 ```
 
@@ -426,24 +412,30 @@ import { es } from 'vuetify/locale'
 const vuetify = createVuetify({
   locale: {
     locale: 'es',
-    messages: { es }
-  }
+    messages: { es },
+  },
 })
 ```
 
 ## API Reference
 
+### Component Slots
+
+| Name      | Props                  | Supported Views  | Description                                                                                  |
+| --------- | ---------------------- | ---------------- | -------------------------------------------------------------------------------------------- |
+| eventMenu | `event: CalendarEvent` | Month, Week, Day | Content specified in this slot will be displayed in a flyout when the user clicks on a event |
+
 ### Component Props
 
 ```typescript
 interface CalendarComponentProps {
-  events?: CalendarEvent[]          // Array of events
-  view?: CalendarView               // Current view mode
+  events?: CalendarEvent[] // Array of events
+  view?: CalendarView // Current view mode
   currentDate?: string | Date | Dayjs // Currently displayed date
-  config?: Partial<CalendarConfig>  // Component configuration
-  filters?: FilterOptions           // Active filters
-  showFilters?: boolean            // Show filter UI
-  lazyLoad?: LazyLoadHandler       // Lazy loading function
+  config?: Partial<CalendarConfig> // Component configuration
+  filters?: FilterOptions // Active filters
+  showFilters?: boolean // Show filter UI
+  lazyLoad?: LazyLoadHandler // Lazy loading function
 }
 ```
 
@@ -457,28 +449,6 @@ interface CalendarComponentEmits {
   'view-change': (view: CalendarView, date: Dayjs) => void
   'date-change': (date: Dayjs) => void
 }
-```
-
-### Store Actions
-
-```typescript
-const store = useCalendarStore()
-
-// Navigation
-store.navigateToday()
-store.navigatePrevious()
-store.navigateNext()
-store.navigateToDate(dayjs('2025-07-01'))
-
-// Events
-store.addEvent(event)
-store.updateEvent(eventId, updates)
-store.removeEvent(eventId)
-store.setEvents(events)
-
-// Configuration
-store.setConfig(config)
-store.setFilters(filters)
 ```
 
 ## Examples
@@ -509,65 +479,63 @@ store.setFilters(filters)
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import dayjs from 'dayjs'
-import type {
-  CalendarEvent,
-  CalendarView,
-  CalendarConfig,
-  FilterOptions,
-  EventDropData,
-  LazyLoadData
-} from 'vue3-calendar-component'
+  import { ref } from 'vue'
+  import dayjs from 'dayjs'
+  import type {
+    CalendarEvent,
+    CalendarView,
+    CalendarConfig,
+    FilterOptions,
+    EventDropData,
+    LazyLoadData,
+  } from 'vue3-calendar-component'
 
-const events = ref<CalendarEvent[]>([])
-const currentView = ref<CalendarView>('month')
-const currentDate = ref(dayjs())
-const filters = ref<FilterOptions>({})
+  const events = ref<CalendarEvent[]>([])
+  const currentView = ref<CalendarView>('month')
+  const currentDate = ref(dayjs())
+  const filters = ref<FilterOptions>({})
 
-const calendarConfig: CalendarConfig = {
-  firstDayOfWeek: 1,
-  timeSlotDuration: 60,
-  minTime: '08:00',
-  maxTime: '18:00',
-  showTimeGrid: true,
-  locale: 'en'
-}
+  const calendarConfig: CalendarConfig = {
+    firstDayOfWeek: 1,
+    timeSlotDuration: 60,
+    minTime: '08:00',
+    maxTime: '18:00',
+    showTimeGrid: true,
+    locale: 'en',
+  }
 
-const loadEvents = async (data: LazyLoadData) => {
-  // Simulate API call
-  const mockEvents: CalendarEvent[] = [
-    {
-      id: '1',
-      title: 'Team Standup',
-      start: data.start.add(1, 'day').hour(9).minute(0).toISOString(),
-      end: data.start.add(1, 'day').hour(9).minute(30).toISOString(),
-      status: 'planned',
-      color: '#1976d2'
-    }
-  ]
-  
-  return mockEvents
-}
+  const loadEvents = async (data: LazyLoadData) => {
+    // Simulate API call
+    const mockEvents: CalendarEvent[] = [
+      {
+        id: '1',
+        title: 'Team Standup',
+        start: data.start.add(1, 'day').hour(9).minute(0).toISOString(),
+        end: data.start.add(1, 'day').hour(9).minute(30).toISOString(),
+        status: 'planned',
+        color: '#1976d2',
+      },
+    ]
 
-const handleEventClick = (event: CalendarEvent, nativeEvent: MouseEvent) => {
-  console.log('Event clicked:', event)
-}
+    return mockEvents
+  }
 
-const handleEventDrop = async (data: EventDropData) => {
-  console.log('Event dropped:', data)
-  // Update event in your backend and local state
-}
+  const handleEventClick = (event: CalendarEvent, nativeEvent: MouseEvent) => {
+    console.log('Event clicked:', event)
+  }
 
-const handleDateClick = (date: any) => {
-  console.log('Date clicked:', date.format('YYYY-MM-DD'))
-}
+  const handleEventDrop = async (data: EventDropData) => {
+    console.log('Event dropped:', data)
+    // Update event in your backend and local state
+  }
 
-const handleViewChange = (view: CalendarView, date: any) => {
-  currentView.value = view
-  currentDate.value = date
-}
+  const handleDateClick = (date: any) => {
+    console.log('Date clicked:', date.format('YYYY-MM-DD'))
+  }
+
+  const handleViewChange = (view: CalendarView, date: any) => {
+    currentView.value = view
+    currentDate.value = date
+  }
 </script>
 ```
-
-This documentation provides a comprehensive guide to using Vue 3 Calendar Component. For more advanced usage and customization options, refer to the source code and type definitions.

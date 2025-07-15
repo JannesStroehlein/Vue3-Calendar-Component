@@ -1,5 +1,6 @@
 import { computed, Ref } from 'vue'
 import { useTimeConverter } from './useTimeConverter'
+import { DynamicTimeSlots } from '../types'
 
 /**
  * Custom composable to dynamically calculate time slot height based on available height and time slot duration.
@@ -14,7 +15,7 @@ export function useDynamicTimeSlots(
   maxTimeRef: Ref<string>,
   slotDurationRef: Ref<number>,
   headerHeight: number = 60
-) {
+) : Ref<DynamicTimeSlots> {
   const dynamicTimeSlotHeight = computed(() => {
     const minTime = useTimeConverter(minTimeRef)
     const maxTime = useTimeConverter(maxTimeRef)

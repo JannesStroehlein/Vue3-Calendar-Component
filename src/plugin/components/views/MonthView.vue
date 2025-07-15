@@ -28,23 +28,32 @@
           </div>
 
           <div class="day-events">
-            <div
-              v-for="event in getEventsForDay(day)"
-              :key="event.id"
-              class="month-event"
-              :style="{
-                backgroundColor: getEventColor(event),
-                color: getEventTextColor(event),
-              }"
-              :class="{
-                'event-completed': event.status === 'completed',
-              }"
-              draggable="true"
-              @click.stop="handleEventClick({ event, nativeEvent: $event })"
-              @dragstart="handleDragStart(event, $event.target)"
-            >
-              <v-icon v-if="event.icon" :icon="event.icon" size="x-small" class="mr-1" />
-              <span class="event-title">{{ event.title }}</span>
+            <div v-for="event in getEventsForDay(day)" :key="event.id">
+              <!-- If the eventMenu slot is specified, add a menu -->
+              <div v-if="$slots.eventMenu">
+                <v-menu>
+                  <template #activator="{ props: activatorProps }">
+                    <MonthEventView
+                      v-bind="activatorProps"
+                      :config="config"
+                      :event="event"
+                      :day="day"
+                      :handle-event-click="handleEventClick"
+                      :handle-drag-start="handleDragStart"
+                    />
+                  </template>
+                  <slot name="eventMenu" :event="event" />
+                </v-menu>
+              </div>
+              <div v-else>
+                <MonthEventView
+                  :config="config"
+                  :event="event"
+                  :day="day"
+                  :handle-event-click="handleEventClick"
+                  :handle-drag-start="handleDragStart"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -65,8 +74,6 @@
     MonthViewProps,
   } from '@/plugin/types'
   import {
-    getEventColor,
-    getEventTextColor,
     getMonthWeeks,
     getWeekDays,
     isToday,
@@ -75,7 +82,7 @@
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
   import { computed } from 'vue'
-  import { VIcon } from 'vuetify/components/VIcon'
+  import MonthEventView from './MonthEventView.vue'
 
   const minTimeRef = computed(() => props.config.minTime || '00:00')
   const minTime = useTimeConverter(minTimeRef)
@@ -233,40 +240,9 @@
     gap: 2px;
   }
 
-  .month-event {
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.75rem;
-    line-height: 1.2;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: opacity 0.2s;
-  }
-
-  .month-event:hover {
-    opacity: 0.8;
-  }
-
-  .month-event.event-completed .event-title {
-    text-decoration: line-through;
-  }
-
-  .event-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1;
-  }
-
   /* Drag and Drop Highlighting Styles */
   .drag-highlight {
     background-color: rgba(25, 118, 210, 0.1) !important;
     border: 2px dashed rgba(25, 118, 210, 0.5) !important;
-  }
-
-  .month-event[draggable='true']:hover {
-    transform: scale(1.02);
-    transition: transform 0.1s ease;
   }
 </style>

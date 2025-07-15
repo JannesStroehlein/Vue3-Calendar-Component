@@ -46,7 +46,19 @@
                     @date-click="handleDateClick"
                     @view-change="handleViewChange"
                     @date-change="handleDateChange"
-                  />
+                  >
+                    <template #eventMenu="{ event }">
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-title>{{ event.title }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ event.description }}</v-list-item-subtitle>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-btn color="primary">Button</v-btn>
+                        </v-list-item>
+                      </v-list>
+                    </template>
+                  </CalendarComponent>
                 </div>
               </v-card-text>
             </v-card>
