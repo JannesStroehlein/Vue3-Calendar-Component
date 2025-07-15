@@ -208,7 +208,7 @@
   )
 
   const toggleTheme = () => {
-    theme.change(theme.global.current.value.dark ? 'light' : 'dark')
+    theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
   }
 
   // Watch for locale changes
