@@ -7,7 +7,7 @@ import WeekView from './components/views/WeekView.vue'
 import type { App } from 'vue'
 import CalendarFilters from './components/CalendarFilters.vue'
 import { useLocale } from './composables/useLocale'
-import { locale as locale_en } from './locale/en'
+import localeEn from './locale/en'
 import type { CalendarConfig, GlobalSettings } from './types'
 
 const defaultCalendarConfig: CalendarConfig = {
@@ -23,7 +23,7 @@ const defaultCalendarConfig: CalendarConfig = {
 export default {
   install(app: App, options: Partial<GlobalSettings> = {}) {
     options.calendarConfig = mergeConfig(options.calendarConfig)
-    options.locale = options.locale ?? locale_en
+    options.locale = options.locale ?? localeEn
 
     const componentName = 'CalendarComponent'
 
@@ -70,5 +70,5 @@ export * from './composables'
 export * from './utils'
 
 // Export locales
-export { locale as localeEn } from './locale/en'
-export { locale as localeDe } from './locale/de'
+export * from './locale/en'
+export * from './locale/de'

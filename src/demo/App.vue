@@ -108,8 +108,8 @@
   import CalendarComponent from '@/plugin/components/CalendarComponent.vue'
   import CalendarFilters from '@/plugin/components/CalendarFilters.vue'
   import { useLocale } from '@/plugin/composables/useLocale'
-  import { locale as locale_de } from '@/plugin/locale/de'
-  import { locale as locale_en } from '@/plugin/locale/en'
+  import locale_de from '@/plugin/locale/de'
+  import locale_en from '@/plugin/locale/en'
   import {
     type CalendarConfig,
     type CalendarEvent,

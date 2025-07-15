@@ -8,6 +8,7 @@ export default defineConfig({
     vue(),
     dts({
       include: ['src/**/*'],
+      exclude: ['src/demo/**/*']
     }),
   ],
   build: {
@@ -15,6 +16,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'Vue3CalendarComponent',
       formats: ['es', 'umd'],
+      cssFileName: 'styles',
       fileName: (format) => `index.${format === 'es' ? 'js' : `${format}.cjs`}`,
     },
     rollupOptions: {

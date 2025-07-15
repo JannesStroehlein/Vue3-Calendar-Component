@@ -19,6 +19,5 @@ export * from './plugin/composables'
 // Export utilities
 export * from './plugin/utils'
 
-// Export locale files with specific names
-export { locale as localeEn } from './plugin/locale/en'
-export { locale as localeDe } from './plugin/locale/de'
+// Note: Locale files are now exported as separate chunks
+// Import them individually: import enLocale from 'vue3-calendar-component/locale/en'

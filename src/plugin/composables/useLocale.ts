@@ -2,10 +2,10 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/de' // Import German locale for dayjs
 import 'dayjs/locale/en'
 import { computed, ref } from 'vue'
-import { locale } from '../locale/en'
+import default_locale from '../locale/en'
 import { CalendarLocale } from '../types'
 
-const localeState = ref<CalendarLocale>(locale)
+const localeState = ref<CalendarLocale>(default_locale)
 
 export function useLocale() {
   const setLocale = (newLocale: CalendarLocale) => {

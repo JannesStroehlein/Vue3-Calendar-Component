@@ -1,6 +1,6 @@
 import { CalendarLocale } from '../types'
 
-export const locale: CalendarLocale = {
+export default <CalendarLocale>{
   dayJsLocale: 'de',
   status: {
     open: 'Offen',

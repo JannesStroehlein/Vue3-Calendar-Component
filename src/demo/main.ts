@@ -6,7 +6,7 @@ import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import './style.css'
 
-import { locale } from '@/plugin/locale/en'
+import locale_en from '@/plugin/locale/en'
 import Vue3CalendarComponent from '../plugin/index'
 import App from './App.vue'
 
@@ -31,7 +31,7 @@ app.use(Vue3CalendarComponent, {
     showTimeGrid: true,
     timeGridDivisions: 4,
   },
-  locale: locale,
+  locale: locale_en,
 })
 
 app.mount('#app')
