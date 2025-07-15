@@ -227,8 +227,26 @@
     // Simulate API call
     console.log('Loading events for range:', data.start, 'to', data.end)
 
-    // Return empty array for demo (events are already loaded)
-    return []
+    // Create a few sample events for the requested range
+
+    const start = dayjs(data.start)
+    const end = dayjs(data.end)
+    const newEvents: CalendarEvent[] = []
+    for (let i = 0; i < 10; i++) {
+      const randomStart = start.add(Math.floor(Math.random() * (end.diff(start, 'day') + 1)), 'day')
+      const randomEnd = randomStart.add(Math.floor(Math.random() * 3) + 1, 'hour')
+      newEvents.push({
+        id: `lazy-${Date.now()}-${i}`,
+        title: `Lazy Loaded Event ${i + 1}`,
+        start: randomStart.toISOString(),
+        end: randomEnd.toISOString(),
+        status: ['open', 'planned', 'completed'][Math.floor(Math.random() * 3)] as any,
+        color: ['#1976d2', '#f44336', '#4caf50'][Math.floor(Math.random() * 3)],
+        icon: 'mdi-calendar',
+        description: `Lazy loaded event ${i + 1} from ${randomStart.format('YYYY-MM-DD')} to ${randomEnd.format('YYYY-MM-DD')}`,
+      })
+    }
+    return newEvents
   }
 
   const handleEventClick = (data: EventClickData) => {

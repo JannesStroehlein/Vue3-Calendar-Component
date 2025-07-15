@@ -178,7 +178,6 @@
         end: end.toDate(),
         view: mergedProps.value.view || 'month',
       }
-      await mergedProps.value.lazyLoad(data)
       const newEvents = await mergedProps.value.lazyLoad(data)
       addEvents(newEvents)
     } catch (error) {
@@ -320,9 +319,14 @@
   // Auto-load events when date range changes (for lazy loading)
   watch(
     visibleDateRange,
-    async (range) => {
+    async (newRange, oldRange) => {
+      if (newRange.start.isSame(oldRange?.start) && newRange.end.isSame(oldRange?.end)) {
+        // No change in range, skip loading
+        return
+      }
+
       if (mergedProps.value.lazyLoad) {
-        await loadEventsForRange(range.start, range.end)
+        await loadEventsForRange(newRange.start, newRange.end)
       }
     },
     { immediate: true }
