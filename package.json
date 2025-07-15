@@ -48,7 +48,6 @@
     "test:e2e:all": "playwright test --grep=integration",
     "test:ct": "playwright test --project=component-tests",
     "test:ct-server": "vite --config vite.demo.config.ts --port 3100",
-    "test:playwright": "playwright test",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "type-check": "vue-tsc --noEmit",
