@@ -1,3 +1,8 @@
+## 1.5.0 (2025-07-15)
+
+* feat: removed playwright config ([ab9863a](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ab9863a))
+* chore: bump dependencies ([b840e2d](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/b840e2d))
+
 ## 1.4.0 (2025-07-09)
 
 * Merge pull request #1 from JannesStroehlein/develop ([0efee36](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/0efee36)), closes [#1](https://github.com/JannesStroehlein/Vue3-Calendar-Component/issues/1)
