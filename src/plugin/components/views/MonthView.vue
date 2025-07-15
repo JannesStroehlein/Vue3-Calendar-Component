@@ -1,8 +1,8 @@
 <template>
   <div class="month-view">
     <div class="month-header">
-      <div v-for="day in weekDayNames" :key="day" class="month-header-day">
-        {{ day }}
+      <div v-for="day in weekDays" :key="`days-col-header-${day.format('YYYY-MM-DD')}`" class="month-header-day">
+        {{ createLocalizedDayjs(day).format('ddd') }}
       </div>
     </div>
 
@@ -68,10 +68,10 @@
     getEventColor,
     getEventTextColor,
     getMonthWeeks,
+    getWeekDays,
     isToday,
     isWeekend,
     getEventsForDay as utilGetEventsForDay,
-    weekdayToNumber,
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
   import { computed } from 'vue'
@@ -96,19 +96,8 @@
     } as EventDropData)
   })
 
-  const weekDayNames = computed(() => {
-    const localizedCurrentDate = createLocalizedDayjs(props.currentDate)
-
-    // Start of the week based on the configured first day
-    const firstDay = localizedCurrentDate
-      // dayjs uses 0-6 for Sunday-Saturday and this is locale independent
-      .add(localizedCurrentDate.get('day'), 'day')
-      .add(weekdayToNumber(props.config.firstDayOfWeek!) + 1, 'day')
-    const days: string[] = []
-    for (let i = 0; i < 7; i++) {
-      days.push(createLocalizedDayjs(firstDay.add(i, 'day')).format('ddd'))
-    }
-    return days
+  const weekDays = computed(() => {
+    return getWeekDays(props.currentDate, props.config.firstDayOfWeek)
   })
 
   const monthWeeks = computed(() => {
