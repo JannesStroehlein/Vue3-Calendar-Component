@@ -1,3 +1,7 @@
+## <small>1.5.1 (2025-07-15)</small>
+
+* fix: lazy load callback should now be consistently ([5c63d28](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/5c63d28))
+
 ## 1.5.0 (2025-07-15)
 
 * feat: removed playwright config ([ab9863a](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ab9863a))
