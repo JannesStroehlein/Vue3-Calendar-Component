@@ -1,3 +1,7 @@
+## <small>1.5.2 (2025-07-15)</small>
+
+* fix: removed duplicate call to lazy load events ([0e7b463](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/0e7b463))
+
 ## <small>1.5.1 (2025-07-15)</small>
 
 * fix: lazy load callback should now be consistently ([5c63d28](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/5c63d28))
