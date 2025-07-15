@@ -74,6 +74,10 @@ export interface CalendarComponentProps extends CalendarComponentPropsBase {
   view?: CalendarView
   currentDate?: string | Date | Dayjs
   filters?: FilterOptions
+  /**
+   * Callback to notify the app that the date range has changed and thus new events should be loaded.
+   * This is useful for lazy loading events when the user navigates to a different date range
+   */
   lazyLoad?: LazyLoadHandler
 }
 
@@ -257,6 +261,6 @@ export interface FiltersChangeData {
 export type EventClickHandler = (data: EventClickData) => void
 export type EventDropHandler = (data: EventDropData) => void | Promise<void>
 export type DateClickHandler = (data: DateClickData) => void
-export type LazyLoadHandler = (data: LazyLoadData) => Promise<CalendarEvent[]> | CalendarEvent[]
+export type LazyLoadHandler = (data: LazyLoadData) => CalendarEvent[] | Promise<CalendarEvent[]>
 export type ViewChangeHandler = (data: ViewChangeData) => void
 export type DateChangeHandler = (data: DateChangeData) => void

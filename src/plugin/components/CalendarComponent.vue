@@ -70,13 +70,6 @@
     currentDate: unmergedProps.currentDate || dayjs(),
     lazyLoad: unmergedProps.lazyLoad,
   }))
-  watch(
-    mergedProps,
-    (newProps) => {
-      console.log('Merged props updated:', newProps)
-    },
-    { immediate: true }
-  )
 
   const emit = defineEmits<CalendarComponentEmits>()
 
@@ -114,7 +107,7 @@
   })
 
   const visibleDateRange = computed(() => {
-    const date = dayjs(mergedProps.value.currentDate || dayjs())
+    const date = currentDateAsDayjs.value
     const firstDayOfTheWeekNumber = weekdayToNumber(mergedProps.value.firstDayOfWeek || 'monday')
 
     switch (mergedProps.value.view) {
@@ -162,7 +155,6 @@
   const view = computed(() => {
     return current_view_model.value || mergedProps.value.view || 'month'
   })
-
   // Actions
   function setCurrentDate(date: Date | string | Dayjs) {
     current_date_model.value = date
@@ -176,7 +168,6 @@
     const normalizedEvents = normalizeEvents(newEvents)
     event_model.value.push(...normalizedEvents)
   }
-
   async function loadEventsForRange(start: Dayjs, end: Dayjs) {
     if (!mergedProps.value.lazyLoad) return
 
@@ -187,6 +178,7 @@
         end: end.toDate(),
         view: mergedProps.value.view || 'month',
       }
+      await mergedProps.value.lazyLoad(data)
       const newEvents = await mergedProps.value.lazyLoad(data)
       addEvents(newEvents)
     } catch (error) {
@@ -327,10 +319,10 @@
 
   // Auto-load events when date range changes (for lazy loading)
   watch(
-    () => visibleDateRange,
+    visibleDateRange,
     async (range) => {
-      if (mergedProps.value.lazyLoad && event_model.value.length === 0) {
-        await loadEventsForRange(range.value.start, range.value.end)
+      if (mergedProps.value.lazyLoad) {
+        await loadEventsForRange(range.start, range.end)
       }
     },
     { immediate: true }
