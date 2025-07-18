@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { config } from '@vue/test-utils'
 import { vi } from 'vitest'
+import { VBtnToggle, VCardActions, VMenu, VTooltip } from 'vuetify/components'
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -68,6 +69,9 @@ config.global.stubs = {
   VCardActions: true,
   VDialog: true,
   VChip: true,
+  VTooltip: true,
+  VMenu: true,
+  VBtnToggle: true,
 }
 
 // Mock CSS imports
@@ -88,6 +92,8 @@ vi.mock('vuetify/components', () => ({
   VSpacer: { name: 'VSpacer', template: '<div class="v-spacer-mock"><slot /></div>' },
   VBtnToggle: { name: 'VBtnToggle', template: '<div class="v-btn-toggle-mock"><slot /></div>' },
   VProgressLinear: { name: 'VProgressLinear', template: '<div class="v-progress-linear-mock"><slot /></div>' },
+  VTooltip: { name: 'VTooltip', template: '<div class="v-tooltip-mock"><slot /></div>' },
+  VMenu: { name: 'VMenu', template: '<div class="v-menu-mock"><slot /></div>' },
 }))
 
 vi.mock('vuetify/components/VIcon', () => ({
