@@ -123,8 +123,16 @@
     getEventsForDay as utilGetEventsForDay,
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
-  import { computed } from 'vue'
+  import { computed, defineComponent } from 'vue'
   import WeekEventView from './WeekEventView.vue'
+  import { VMenu } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      WeekEventView,
+      VMenu,
+    },
+  })
 
   const props = defineProps<WeekViewProps>()
   const emit = defineEmits<WeekViewEmits>()

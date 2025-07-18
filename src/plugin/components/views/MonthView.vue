@@ -81,8 +81,16 @@
     getEventsForDay as utilGetEventsForDay,
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
-  import { computed } from 'vue'
+  import { computed, defineComponent } from 'vue'
   import MonthEventView from './MonthEventView.vue'
+  import { VMenu } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      MonthEventView,
+      VMenu,
+    },
+  })
 
   const minTimeRef = computed(() => props.config.minTime || '00:00')
   const minTime = useTimeConverter(minTimeRef)

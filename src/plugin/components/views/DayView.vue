@@ -106,8 +106,15 @@
   } from '@/plugin/types'
   import { generateTimeSlots, getEventsForDay, isToday, isWeekend } from '@/plugin/utils'
   import { Dayjs } from 'dayjs'
-  import { computed } from 'vue'
+  import { computed, defineComponent } from 'vue'
   import DayEventView from './DayEventView.vue'
+  import { VMenu } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      VMenu,
+    },
+  })
 
   const props = defineProps<DayViewProps>()
   const emit = defineEmits<DayViewEmits>()

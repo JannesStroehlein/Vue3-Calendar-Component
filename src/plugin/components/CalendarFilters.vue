@@ -57,7 +57,7 @@
   import type { CalendarFiltersEmits, CalendarFiltersProps, EventStatus, FilterOptions } from '@/plugin/types'
   import { debounce } from '@/plugin/utils'
   import { computed, ref, watch } from 'vue'
-  import { VBtn, VCard, VChip, VCol, VRow, VSelect, VSpacer, VTextField } from 'vuetify/components'
+  import { VBtn, VCard, VChip, VCol, VMenu, VRow, VSelect, VSpacer, VTextField } from 'vuetify/components'
   import { useLocale } from '../composables/useLocale'
 
   // Component registration for library usage
@@ -71,6 +71,7 @@
       VChip,
       VBtn,
       VSpacer,
+      VMenu,
     },
   })
 

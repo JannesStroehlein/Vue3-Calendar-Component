@@ -33,7 +33,14 @@
 
   import { CalendarEventInternal, WeekEventViewProps } from '@/plugin/types'
   import { Dayjs } from 'dayjs'
-  import { CSSProperties } from 'vue'
+  import { CSSProperties, defineComponent } from 'vue'
+  import { VIcon } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      VIcon,
+    },
+  })
 
   const props = defineProps<WeekEventViewProps>()
 

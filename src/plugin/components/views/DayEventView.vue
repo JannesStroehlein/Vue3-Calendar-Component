@@ -40,7 +40,14 @@
 <script setup lang="ts">
   import { CalendarEventInternal, DayEventViewProps } from '@/plugin/types'
   import { formatEventTime, getEventColor, getEventTextColor } from '@/plugin/utils'
-  import { CSSProperties } from 'vue'
+  import { CSSProperties, defineComponent } from 'vue'
+  import { VIcon } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      VIcon,
+    },
+  })
 
   const props = defineProps<DayEventViewProps>()
 

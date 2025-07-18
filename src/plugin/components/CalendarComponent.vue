@@ -54,8 +54,18 @@
     type ViewChangeHandler,
   } from '@/plugin/types'
   import dayjs, { Dayjs } from 'dayjs'
-  import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { computed, defineComponent, inject, onMounted, onUnmounted, ref, watch } from 'vue'
   import { filterEvents, getEventsInRange, normalizeEvents, weekdayToNumber } from '../utils'
+
+  defineComponent({
+    components: {
+      CalendarToolbar,
+      AgendaView,
+      DayView,
+      MonthView,
+      WeekView,
+    },
+  })
 
   const globalConfig = inject<CalendarConfig>('calendarGlobalConfig')
 

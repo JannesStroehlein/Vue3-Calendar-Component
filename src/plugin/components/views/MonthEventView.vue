@@ -20,6 +20,14 @@
 <script setup lang="ts">
   import { MonthEventViewProps } from '@/plugin/types'
   import { getEventColor, getEventTextColor } from '@/plugin/utils'
+  import { defineComponent } from 'vue'
+  import { VIcon } from 'vuetify/components'
+
+  defineComponent({
+    components: {
+      VIcon,
+    },
+  })
 
   defineProps<MonthEventViewProps>()
 </script>
