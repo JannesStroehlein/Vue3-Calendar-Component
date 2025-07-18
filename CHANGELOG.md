@@ -1,3 +1,9 @@
+## <small>1.6.1 (2025-07-18)</small>
+
+* style: fixed linting error ([2b23d9f](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/2b23d9f))
+* tests: fixed tests ([489d616](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/489d616))
+* fix: updated rollup config and added component definitions ([10c58a2](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/10c58a2))
+
 ## 1.6.0 (2025-07-15)
 
 * revert: use deprecated way of changing theme in demo app because new way does not work ([ace28bd](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/ace28bd))
