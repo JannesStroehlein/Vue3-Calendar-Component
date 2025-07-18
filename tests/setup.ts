@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 import { config } from '@vue/test-utils'
 import { vi } from 'vitest'
-import { VBtnToggle, VCardActions, VMenu, VTooltip } from 'vuetify/components'
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
