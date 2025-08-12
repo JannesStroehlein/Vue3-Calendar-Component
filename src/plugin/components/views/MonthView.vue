@@ -36,6 +36,7 @@
                     <MonthEventView
                       v-bind="activatorProps"
                       :config="config"
+                      :read-only="readOnly"
                       :event="event"
                       :day="day"
                       :handle-event-click="handleEventClick"
@@ -48,6 +49,7 @@
               <div v-else>
                 <MonthEventView
                   :config="config"
+                  :read-only="readOnly"
                   :event="event"
                   :day="day"
                   :handle-event-click="handleEventClick"
@@ -82,8 +84,8 @@
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
   import { computed, defineComponent } from 'vue'
-  import MonthEventView from './MonthEventView.vue'
   import { VMenu } from 'vuetify/components'
+  import MonthEventView from './MonthEventView.vue'
 
   defineComponent({
     components: {
@@ -97,6 +99,8 @@
 
   const props = defineProps<MonthViewProps>()
   const emit = defineEmits<MonthViewEmits>()
+
+  const allowDragAndDrop = computed(() => !props.readOnly)
 
   const { createLocalizedDayjs } = useLocale()
 
@@ -132,6 +136,7 @@
   }
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
+    if (!allowDragAndDrop.value) return
     if (target instanceof HTMLElement) {
       target.style.opacity = '0.5'
       target.style.transform = 'rotate(3deg)'
@@ -140,6 +145,7 @@
   }
 
   const handleDrop = (date: Dayjs) => {
+    if (!allowDragAndDrop.value) return
     // Clear all drag highlights
     document.querySelectorAll('.drag-highlight').forEach((el) => {
       el.classList.remove('drag-highlight')
@@ -150,16 +156,19 @@
       element.style.opacity = ''
       element.style.transform = ''
     })
+
     drop(date.startOf('day').add(minTime.value, 'minute'))
   }
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.add('drag-highlight')
   }
 
   const handleDragLeave = (event: DragEvent) => {
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.remove('drag-highlight')
   }

@@ -24,6 +24,10 @@ export interface GlobalSettings {
 
 interface CalendarComponentPropsBase {
   config: CalendarConfig
+  /**
+   * If set to true, drag and drop will be disabled
+   */
+  readOnly?: boolean
 }
 
 /**
@@ -113,7 +117,6 @@ export interface DayEventViewProps extends CalendarComponentPropsBase {
   handleEventClick: EventClickHandler
   handleDragStart: (event: CalendarEventInternal, target: EventTarget) => void
 }
-
 
 export type WeekViewProps = ViewProps
 export type MonthViewProps = ViewProps

@@ -8,7 +8,7 @@
     :class="{
       'event-completed': event.status === 'completed',
     }"
-    draggable="true"
+    :draggable="!readOnly"
     @click.stop="handleEventClick({ event, nativeEvent: $event })"
     @dragstart="handleDragStart(event, $event.target!)"
   >

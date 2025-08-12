@@ -81,6 +81,7 @@
                 <v-spacer />
                 <v-btn
                   v-if="event.status !== 'completed' && event.status !== 'cancelled'"
+                  :disabled="readOnly"
                   variant="text"
                   size="small"
                   color="success"
@@ -90,6 +91,7 @@
                 </v-btn>
                 <v-btn
                   v-if="event.status !== 'cancelled'"
+                  :disabled="readOnly"
                   variant="text"
                   size="small"
                   color="error"
