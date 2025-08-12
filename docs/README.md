@@ -4,6 +4,12 @@
 
 Vue 3 Calendar Component is a comprehensive calendar component library built with Vue 3, Vuetify 3, and TypeScript. It provides multiple view modes, event management, drag & drop functionality, and extensive customization options.
 
+> [!CAUTION] Documentation out of date
+> The documentation may not reflect the latest changes in the codebase.
+> Please refer to the source code for the most accurate information.
+>
+> If you have the technical expertise, you can also contribute by fixing the documentation or the code itself.
+
 ## Table of Contents
 
 - [Installation](#installation)
