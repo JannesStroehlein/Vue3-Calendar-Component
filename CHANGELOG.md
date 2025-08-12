@@ -1,3 +1,11 @@
+## 1.7.0 (2025-08-12)
+
+* Merge pull request #2 from JannesStroehlein/develop ([dea9510](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/dea9510)), closes [#2](https://github.com/JannesStroehlein/Vue3-Calendar-Component/issues/2)
+* fix: fixed broken next button ([21d0a6a](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/21d0a6a))
+* refactor: removed v-tooltip directive in favour of v-tooltip component to improve compatibility ([38384b3](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/38384b3))
+* feat: added readOnly prop to calendar to disable drag & drop and complete/cancel buttons ([d310297](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/d310297))
+* docs: updated README and added disclaimer to docs ([52af09a](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/52af09a))
+
 ## <small>1.6.1 (2025-07-18)</small>
 
 * style: fixed linting error ([2b23d9f](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/2b23d9f))
