@@ -10,7 +10,7 @@
 
     <v-tooltip :text="locale.current.value.toolbar.buttons.next || 'Next'">
       <template #activator="{ props: toolTipProps }">
-        <v-btn v-bind="toolTipProps" icon>
+        <v-btn v-bind="toolTipProps" icon :disabled="loading" @click="$emit('navigate-next')">
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
       </template>
