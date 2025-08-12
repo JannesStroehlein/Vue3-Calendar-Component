@@ -77,6 +77,7 @@
                   <WeekEventView
                     v-bind="activatorProps"
                     :config="config"
+                    :read-only="readOnly"
                     :event="event"
                     :day="day"
                     :dynamic-time-slots="dynamicTimeSlots"
@@ -90,6 +91,7 @@
             <div v-else>
               <WeekEventView
                 :config="config"
+                :read-only="readOnly"
                 :event="event"
                 :day="day"
                 :dynamic-time-slots="dynamicTimeSlots"
@@ -124,8 +126,8 @@
   } from '@/plugin/utils'
   import type { Dayjs } from 'dayjs'
   import { computed, defineComponent } from 'vue'
-  import WeekEventView from './WeekEventView.vue'
   import { VMenu } from 'vuetify/components'
+  import WeekEventView from './WeekEventView.vue'
 
   defineComponent({
     components: {
@@ -136,6 +138,8 @@
 
   const props = defineProps<WeekViewProps>()
   const emit = defineEmits<WeekViewEmits>()
+
+  const allowDragAndDrop = computed(() => !props.readOnly)
 
   const { handleDragStart: dragStart, handleDrop: drop } = useDragAndDrop(async (data: any) => {
     emit('event-drop', {
@@ -194,6 +198,7 @@
   }
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
+    if (!allowDragAndDrop.value) return
     if (target instanceof HTMLElement) {
       target.style.opacity = '0.5'
       target.style.transform = 'rotate(3deg)'
@@ -212,11 +217,13 @@
       element.style.opacity = ''
       element.style.transform = ''
     })
+    if (!allowDragAndDrop.value) return
     drop(date)
   }
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.add('drag-highlight')
   }
@@ -228,6 +235,7 @@
 
   const handleTimeSlotDragOver = (event: DragEvent) => {
     event.preventDefault()
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.add('drag-highlight-slot')
   }

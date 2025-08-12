@@ -67,6 +67,7 @@
                 <DayEventView
                   v-bind="activatorProps"
                   :config="config"
+                  :read-only="readOnly"
                   :event="event"
                   :day="currentDate"
                   :dynamic-time-slots="dynamicTimeSlots"
@@ -80,6 +81,7 @@
           <div v-else>
             <DayEventView
               :config="config"
+              :read-only="readOnly"
               :event="event"
               :day="currentDate"
               :dynamic-time-slots="dynamicTimeSlots"
@@ -107,8 +109,8 @@
   import { generateTimeSlots, getEventsForDay, isToday, isWeekend } from '@/plugin/utils'
   import { Dayjs } from 'dayjs'
   import { computed, defineComponent } from 'vue'
-  import DayEventView from './DayEventView.vue'
   import { VMenu } from 'vuetify/components'
+  import DayEventView from './DayEventView.vue'
 
   defineComponent({
     components: {
@@ -118,6 +120,8 @@
 
   const props = defineProps<DayViewProps>()
   const emit = defineEmits<DayViewEmits>()
+
+  const allowDragAndDrop = computed(() => !props.readOnly)
 
   // Computed property to access container height
   const availableHeight = computed(() => {
@@ -162,6 +166,7 @@
   }
 
   const handleDragStart = (event: CalendarEventInternal, target: EventTarget | null) => {
+    if (!allowDragAndDrop.value) return
     if (target instanceof HTMLElement) {
       target.style.opacity = '0.5'
       target.style.transform = 'rotate(3deg)'
@@ -170,6 +175,7 @@
   }
 
   const handleDrop = (date: Dayjs) => {
+    if (!allowDragAndDrop.value) return
     // Clear all drag highlights
     document.querySelectorAll('.drag-highlight').forEach((el) => {
       el.classList.remove('drag-highlight')
@@ -185,6 +191,7 @@
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.add('drag-highlight')
   }
@@ -196,6 +203,7 @@
 
   const handleTimeSlotDragOver = (event: DragEvent) => {
     event.preventDefault()
+    if (!allowDragAndDrop.value) return
     const target = event.currentTarget as HTMLElement
     target.classList.add('drag-highlight-slot')
   }

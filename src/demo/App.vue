@@ -39,6 +39,7 @@
                     :events="events"
                     :view="currentView"
                     :config="calendarConfig"
+                    :read-only="currentReadOnly"
                     :filters="filters"
                     :lazy-load="loadEvents"
                     @event-click="handleEventClick"
@@ -107,6 +108,7 @@
                   label="Time Slot Duration (minutes)"
                 />
                 <v-switch v-model="calendarConfig.showTimeGrid" label="Show Time Grid" />
+                <v-switch v-model="currentReadOnly" label="Read Only" />
               </v-card-text>
             </v-card>
           </v-col>
@@ -179,6 +181,7 @@
 
   const currentView = ref<CalendarView>('month')
   const currentDate = ref<Date | string | Dayjs>(dayjs())
+  const currentReadOnly = ref<boolean>(false)
 
   // Locale options
   const localeOptions = ref([

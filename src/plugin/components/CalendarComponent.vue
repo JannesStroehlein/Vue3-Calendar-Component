@@ -16,6 +16,7 @@
         :is="currentViewComponent"
         :key="`${view}-${currentDate.format('YYYY-MM-DD')}`"
         :config="config"
+        :read-only="readOnly"
         :events="visibleEvents"
         :current-date="currentDate"
         :view="current_view_model"
