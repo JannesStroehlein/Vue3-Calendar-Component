@@ -1,3 +1,7 @@
+## <small>1.7.1 (2025-08-12)</small>
+
+* fix: VToolTip not registered as framework component ([b96c84f](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/b96c84f))
+
 ## 1.7.0 (2025-08-12)
 
 * Merge pull request #2 from JannesStroehlein/develop ([dea9510](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/dea9510)), closes [#2](https://github.com/JannesStroehlein/Vue3-Calendar-Component/issues/2)
