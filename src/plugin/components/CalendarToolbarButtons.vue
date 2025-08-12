@@ -1,20 +1,22 @@
 <template>
   <v-toolbar density="compact" class="calendar-toolbar">
-    <VTooltip :text="locale.current.value.toolbar.buttons.previous || 'Previous'">
-      <template #activator="{ props: toolTipProps }">
-        <v-btn v-bind="toolTipProps" icon :disabled="loading" @click="$emit('navigate-previous')">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-      </template>
-    </VTooltip>
+    <v-btn
+      :title="locale.current.value.toolbar.buttons.previous || 'Previous'"
+      icon
+      :disabled="loading"
+      @click="$emit('navigate-previous')"
+    >
+      <v-icon>mdi-chevron-left</v-icon>
+    </v-btn>
 
-    <VTooltip :text="locale.current.value.toolbar.buttons.next || 'Next'">
-      <template #activator="{ props: toolTipProps }">
-        <v-btn v-bind="toolTipProps" icon :disabled="loading" @click="$emit('navigate-next')">
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
-      </template>
-    </VTooltip>
+    <v-btn
+      :title="locale.current.value.toolbar.buttons.next || 'Next'"
+      icon
+      :disabled="loading"
+      @click="$emit('navigate-next')"
+    >
+      <v-icon>mdi-chevron-right</v-icon>
+    </v-btn>
 
     <v-btn variant="text" :disabled="loading" class="mx-2" @click="$emit('navigate-today')">
       {{ locale.current.value.toolbar.buttons.today || 'Today' }}
@@ -69,7 +71,7 @@
     CalendarView,
   } from '@/plugin/types'
   import { computed } from 'vue'
-  import { VBtn, VBtnToggle, VIcon, VProgressLinear, VSpacer, VToolbar, VTooltip } from 'vuetify/components'
+  import { VBtn, VBtnToggle, VIcon, VProgressLinear, VSpacer, VToolbar } from 'vuetify/components'
   import { useLocale } from '../composables/useLocale'
 
   const locale = useLocale()
@@ -84,7 +86,6 @@
       VSpacer,
       VBtnToggle,
       VProgressLinear,
-      VTooltip,
     },
   })
 

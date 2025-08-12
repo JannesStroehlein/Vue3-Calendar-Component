@@ -127,7 +127,7 @@
   } from '@/plugin/utils'
   import dayjs from 'dayjs'
   import { computed } from 'vue'
-  import { VBtn, VCard, VCardActions, VChip, VSpacer, VTooltip } from 'vuetify/components'
+  import { VBtn, VCard, VCardActions, VChip, VSpacer } from 'vuetify/components'
   import { VIcon } from 'vuetify/components/VIcon'
 
   // Component registration for library usage
@@ -138,7 +138,6 @@
       VCardActions,
       VChip,
       VSpacer,
-      VTooltip,
       VBtn,
     },
   })
