@@ -1,22 +1,20 @@
 <template>
   <v-toolbar density="compact" class="calendar-toolbar">
-    <v-btn
-      v-tooltip="locale.current.value.toolbar.buttons.previous || 'Previous'"
-      icon
-      :disabled="loading"
-      @click="$emit('navigate-previous')"
-    >
-      <v-icon>mdi-chevron-left</v-icon>
-    </v-btn>
+    <v-tooltip :text="locale.current.value.toolbar.buttons.previous || 'Previous'">
+      <template #activator="{ props: toolTipProps }">
+        <v-btn v-bind="toolTipProps" icon :disabled="loading" @click="$emit('navigate-previous')">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
-    <v-btn
-      v-tooltip="locale.current.value.toolbar.buttons.next || 'Next'"
-      icon
-      :disabled="loading"
-      @click="$emit('navigate-next')"
-    >
-      <v-icon>mdi-chevron-right</v-icon>
-    </v-btn>
+    <v-tooltip :text="locale.current.value.toolbar.buttons.next || 'Next'">
+      <template #activator="{ props: toolTipProps }">
+        <v-btn v-bind="toolTipProps" icon>
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
     <v-btn variant="text" :disabled="loading" class="mx-2" @click="$emit('navigate-today')">
       {{ locale.current.value.toolbar.buttons.today || 'Today' }}
