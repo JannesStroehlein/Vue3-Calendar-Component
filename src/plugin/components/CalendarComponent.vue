@@ -27,8 +27,8 @@
         @event-drop="handleEventDrop"
         @date-click="handleDateClick"
       >
-        <template v-for="(_, name) in $slots" #[name]="slotProps">
-          <slot :name="name" v-bind="slotProps || {}"></slot>
+        <template v-for="name in slotNames" :key="name" #[name]="slotProps">
+          <slot :name="name" v-bind="slotProps || {}" />
         </template>
       </component>
     </div>
@@ -55,7 +55,7 @@
     type ViewChangeHandler,
   } from '@/plugin/types'
   import dayjs, { Dayjs } from 'dayjs'
-  import { computed, defineComponent, inject, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { computed, defineComponent, getCurrentInstance, inject, onMounted, onUnmounted, ref, watch } from 'vue'
   import { filterEvents, getEventsInRange, normalizeEvents, weekdayToNumber } from '../utils'
 
   defineComponent({
@@ -165,6 +165,13 @@
 
   const view = computed(() => {
     return current_view_model.value || mergedProps.value.view || 'month'
+  })
+
+  // Expose slot names typed to avoid TS implicit any in template
+  const slotNames = computed<string[]>(() => {
+    const inst = getCurrentInstance()
+    const slots = (inst?.slots ?? {}) as Record<string, unknown>
+    return Object.keys(slots)
   })
   // Actions
   function setCurrentDate(date: Date | string | Dayjs) {
