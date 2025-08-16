@@ -1,3 +1,8 @@
+## <small>1.7.3 (2025-08-16)</small>
+
+* Merge branch 'main' of https://github.com/JannesStroehlein/Vue3-Calendar ([45ec6f7](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/45ec6f7))
+* fix: regression with correct month display if the first day of the week is sunday ([90c69ad](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/90c69ad))
+
 ## <small>1.7.2 (2025-08-12)</small>
 
 * fix: removed VToolTip due to compatibility issues ([b786b04](https://github.com/JannesStroehlein/Vue3-Calendar-Component/commit/b786b04))
