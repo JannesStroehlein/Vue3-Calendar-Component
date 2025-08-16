@@ -71,7 +71,11 @@ export function generateTimeSlots(
 }
 
 export function getWeekDays(date: Dayjs, firstDayOfWeek: WeekDay = 'monday'): Dayjs[] {
-  const startOfWeek = date.add(-date.get('day'), 'd').add(weekdayToNumber(firstDayOfWeek), 'day')
+  let startOfWeek = date.startOf('isoWeek').isoWeekday(weekdayToIsoWeekday(firstDayOfWeek))
+  if (firstDayOfWeek !== 'monday') {
+    startOfWeek = startOfWeek.subtract(1, 'week')
+  }
+
   const days: Dayjs[] = []
   for (let i = 0; i < 7; i++) {
     days.push(startOfWeek.add(i, 'day'))
@@ -80,17 +84,17 @@ export function getWeekDays(date: Dayjs, firstDayOfWeek: WeekDay = 'monday'): Da
 }
 
 export function getMonthWeeks(date: Dayjs, firstDayOfWeek: WeekDay = 'monday'): Dayjs[][] {
-  const firstDayOfWeekNumber = weekdayToNumber(firstDayOfWeek)
-
   const firstDay = date.startOf('month')
+  let firstDayOfFirstWeekInMonth = firstDay.isoWeekday(weekdayToIsoWeekday(firstDayOfWeek))
+  if (firstDayOfFirstWeekInMonth.isAfter(firstDay)) {
+    firstDayOfFirstWeekInMonth = firstDayOfFirstWeekInMonth.subtract(1, 'week')
+  }
   const lastDay = date.endOf('month')
-  const startDate = firstDay.startOf('week').add(firstDayOfWeekNumber, 'day')
-  const endDate = lastDay.endOf('week').add(firstDayOfWeekNumber, 'day')
 
   const weeks: Dayjs[][] = []
-  let current = startDate
+  let current = firstDayOfFirstWeekInMonth
 
-  while (current.isBefore(endDate) || current.isSame(endDate, 'day')) {
+  while (current.isBefore(lastDay) || current.isSame(lastDay, 'day')) {
     const week: Dayjs[] = []
     for (let i = 0; i < 7; i++) {
       week.push(current.add(i, 'day'))
@@ -165,8 +169,30 @@ export function isToday(date: Dayjs): boolean {
 }
 
 export function isWeekend(date: Dayjs): boolean {
-  const day = date.day()
-  return day === 0 || day === 6
+  const day = date.isoWeekday()
+
+  return day === 6 || day === 7
+}
+
+export function weekdayToIsoWeekday(day: WeekDay): number {
+  switch (day) {
+    case 'monday':
+      return 1
+    case 'tuesday':
+      return 2
+    case 'wednesday':
+      return 3
+    case 'thursday':
+      return 4
+    case 'friday':
+      return 5
+    case 'saturday':
+      return 6
+    case 'sunday':
+      return 7
+    default:
+      return -1 // Invalid day
+  }
 }
 
 export function weekdayToNumber(day: WeekDay) {

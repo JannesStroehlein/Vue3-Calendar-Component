@@ -6,8 +6,8 @@ export * from './plugin/types'
 
 // Export components individually
 export { default as CalendarComponent } from './plugin/components/CalendarComponent.vue'
-export { default as CalendarToolbarButtons } from './plugin/components/CalendarToolbarButtons.vue'
 export { default as CalendarFilters } from './plugin/components/CalendarFilters.vue'
+export { default as CalendarToolbarButtons } from './plugin/components/CalendarToolbarButtons.vue'
 export { default as AgendaView } from './plugin/components/views/AgendaView.vue'
 export { default as DayView } from './plugin/components/views/DayView.vue'
 export { default as MonthView } from './plugin/components/views/MonthView.vue'
